@@ -8,7 +8,13 @@ AIMS_DATABASE = {
     'rs12913832': {'gene': 'OCA2/HERC2', 'trait': 'Íris (Alelo G recessivo associado a fenótipos de olhos claros)'},
     'rs2814778': {'gene': 'DARC', 'trait': 'Antigénio Duffy (Alelo C predominante em ancestralidade subsaariana profunda)'},
     'rs16891982': {'gene': 'SLC45A2', 'trait': 'Síntese de melanina (Alelo G associado a linhagens caucásicas)'},
-    'rs4988235': {'gene': 'MCM6 / LCT', 'trait': 'Tolerância à Lactose (Alelo T sinaliza mutação pastoralista indo-europeia)'}
+    'rs4988235': {'gene': 'MCM6 / LCT', 'trait': 'Tolerância à Lactose (Alelo T sinaliza mutação pastoralista indo-europeia)'},
+    'rs671': {'gene': 'ALDH2', 'trait': 'Metabolismo do álcool / "rubor asiático" (Alelo A quase exclusivo de ancestralidade da Ásia Oriental)'},
+    'rs1042602': {'gene': 'TYR', 'trait': 'Pigmentação da pele/olhos (variação de frequência entre populações europeias e não-europeias)'},
+    'rs12203592': {'gene': 'IRF4', 'trait': 'Sardas e pigmentação clara (associado a fenótipos europeus)'},
+    'rs1805007': {'gene': 'MC1R', 'trait': 'Cabelo ruivo / pele clara (enriquecido em populações do norte da Europa, ex. celtas)'},
+    'rs642742': {'gene': 'ASIP (região próxima)', 'trait': 'Pigmentação da pele (diferencia ancestralidade africana de não-africana)'},
+    'rs1800414': {'gene': 'OCA2', 'trait': 'Pigmentação da pele (variante de alta frequência na Ásia Oriental)'}
 }
 
 def decode_ancestry(file_path):
