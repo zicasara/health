@@ -9,6 +9,8 @@ mtHap de James Lick (https://dna.jameslick.com/mthap/).
 
 import pandas as pd
 
+from .reporter import GenomicReport
+
 # Identificadores usados por diferentes fabricantes para o cromossoma mitocondrial.
 MITO_CHROMOSOME_LABELS = {"MT", "M", "26", "CHRM", "MITO"}
 
@@ -107,3 +109,17 @@ class GenomicETL:
             "para estimar o seu haplogrupo materno."
         )
         return output_path
+
+    def generate_report(self, output_path=None):
+        """
+        Gera um relatório estruturado (sexo inferido, ancestralidade e
+        traços fenotípicos) a partir dos dados carregados.
+        """
+        if self.data is None:
+            raise RuntimeError("Os dados ainda não foram carregados. Chame load_data() primeiro.")
+
+        print("[+] A gerar relatório genómico estruturado...")
+        report = GenomicReport(self.data).generate_report(output_path=output_path)
+        if output_path:
+            print(f"    Relatório gravado em: {output_path}")
+        return report
