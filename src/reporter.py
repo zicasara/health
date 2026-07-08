@@ -451,6 +451,44 @@ ANCESTRY_DIAGNOSTIC = {
     "rs174570":   ("FADS", "Adaptação metabólica de dieta (varia por população)"),
 }
 
+# ==========================================================================
+# SECÇÃO 6: PERFIL NEUROBIOLÓGICO (EXPLORATÓRIO — BAIXA EVIDÊNCIA)
+# ==========================================================================
+# Pontuação por eixos a partir de variantes candidatas. Os pesos são
+# ILUSTRATIVOS: as associações gene→personalidade/cognição (COMT, BDNF,
+# DRD2, HTR2A) têm efeitos pequenos e replicação fraca. NÃO é uma avaliação
+# psicológica válida — leitura recreativa/educativa apenas.
+NEURO_WEIGHTS = {
+    "rs4680":    {"gene": "COMT",       "axis_by_geno": {"GG": ("Execucao", 2),   "AA": ("Execucao", -2)}},
+    "rs6265":    {"gene": "BDNF",       "axis_by_geno": {"GG": ("Plasticidade", 2), "AA": ("Plasticidade", -1)}},
+    "rs1800497": {"gene": "ANKK1/DRD2", "axis_by_geno": {"CC": ("Execucao", 1),   "TT": ("Execucao", -1)}},
+    "rs6311":    {"gene": "HTR2A",      "axis_by_geno": {"AA": ("Resiliencia", 1), "GG": ("Resiliencia", -1)}},
+}
+NEURO_AXES = ("Execucao", "Resiliencia", "Plasticidade")
+
+_COMPLEMENT = {"A": "T", "T": "A", "C": "G", "G": "C"}
+
+
+def _match_weighted_genotype(genotype, weight_map):
+    """
+    Faz corresponder o genótipo às chaves do mapa de pesos, tolerando a
+    ordem dos alelos E a cadeia (strand) — tenta o genótipo direto e o seu
+    complemento. Devolve (chave_correspondente, invertido_por_strand) ou
+    (None, False). Só se aplica a homozigotos definidos no mapa.
+    """
+    if not genotype or len(genotype) != 2:
+        return None, False
+    candidates = {genotype, genotype[::-1]}
+    for c in list(candidates):
+        if c in weight_map:
+            return c, False
+    # Tenta o complemento (ex.: CC no chip == GG na convenção do peso).
+    comp = "".join(_COMPLEMENT.get(b, "?") for b in genotype)
+    for c in {comp, comp[::-1]}:
+        if c in weight_map:
+            return c, True
+    return None, False
+
 
 class GenomicReport:
     """Produz um relatório estruturado a partir do DataFrame já carregado."""
@@ -659,6 +697,42 @@ class GenomicReport:
             })
         return results
 
+    # -- Secção 6: perfil neurobiológico (exploratório) --------------------
+    def calcular_score_neuro(self):
+        """
+        Pontua eixos neurocomportamentais a partir de variantes candidatas.
+
+        EXPLORATÓRIO / baixa evidência. Corrige orientação de cadeia e trata
+        heterozigotos como neutros (os pesos só definem homozigotos).
+        Devolve {'scores': {...}, 'detail': [...], 'tendency': str}.
+        """
+        scores = {axis: 0 for axis in NEURO_AXES}
+        detail = []
+        for rsid, info in NEURO_WEIGHTS.items():
+            genotype = self._genotype.get(rsid)
+            entry = {"rsid": rsid, "gene": info["gene"],
+                     "genotype": genotype or "ausente", "axis": None, "value": 0,
+                     "status": ""}
+            if not genotype or genotype in ("--", ""):
+                entry["status"] = "ausente do chip"
+            else:
+                key, flipped = _match_weighted_genotype(genotype, info["axis_by_geno"])
+                if key is None:
+                    # Heterozigoto ou genótipo não pontuado.
+                    is_het = len(genotype) == 2 and genotype[0] != genotype[1]
+                    entry["status"] = "neutro (heterozigoto)" if is_het else "neutro (não pontuado)"
+                else:
+                    axis, value = info["axis_by_geno"][key]
+                    scores[axis] += value
+                    entry.update(axis=axis, value=value,
+                                 status="contabilizado" + (" [strand corrigida]" if flipped else ""))
+            detail.append(entry)
+
+        tendency = ("Perfil Executivo estável" if scores["Execucao"] > 0
+                    else "Perfil Criativo/Exploratório" if scores["Execucao"] < 0
+                    else "Perfil Executivo equilibrado (neutro)")
+        return {"scores": scores, "detail": detail, "tendency": tendency}
+
     # -- Composição do relatório -------------------------------------------
     def generate_report(self, output_path=None, fmt="text"):
         """
@@ -757,6 +831,20 @@ class GenomicReport:
                 add(f"    [{d['rsid']}] {d['gene']} | ausente do chip ({d['signal']})")
         add("    ⚠ Corroboram a ancestralidade maioritária; NÃO quantificam percentagens")
         add("      (componentes minoritários de ~3-4% exigem análise genome-wide com painéis).")
+        add("")
+
+        neuro = self.calcular_score_neuro()
+        add("[6] PERFIL NEUROBIOLÓGICO (EXPLORATÓRIO — BAIXA EVIDÊNCIA)")
+        for axis in NEURO_AXES:
+            add(f"    {axis}: {neuro['scores'][axis]:+d} pontos")
+        add(f"    Tendência: {neuro['tendency']}")
+        add("    Detalhe dos marcadores:")
+        for e in neuro["detail"]:
+            contrib = f"{e['axis']} {e['value']:+d}" if e["axis"] else "—"
+            add(f"      [{e['rsid']}] {e['gene']} | Genótipo: {e['genotype']} "
+                f"| {e['status']} ({contrib})")
+        add("    ⚠ Pesos ILUSTRATIVOS; associações gene→personalidade/cognição têm efeito")
+        add("      pequeno e replicação fraca. NÃO é avaliação psicológica — uso recreativo.")
         add("")
 
         add("-" * 68)
@@ -880,6 +968,28 @@ class GenomicReport:
         add("> ⚠️ Corroboram a ancestralidade **maioritária**; **não** quantificam percentagens — "
             "componentes minoritários (~3-4%) exigem análise genome-wide com painéis de referência "
             "(1000 Genomes/HGDP) e ferramentas como ADMIXTURE/RFMix.")
+        add("")
+
+        # -- Secção 6 --
+        neuro = self.calcular_score_neuro()
+        add("## 6. Perfil neurobiológico (exploratório — baixa evidência)")
+        add("")
+        add("| Eixo | Pontuação |")
+        add("|------|:---------:|")
+        for axis in NEURO_AXES:
+            add(f"| {axis} | {neuro['scores'][axis]:+d} |")
+        add("")
+        add(f"**Tendência:** {neuro['tendency']}")
+        add("")
+        add("| RSID | Gene | Genótipo | Estado | Contribuição |")
+        add("|------|------|:--------:|--------|:------------:|")
+        for e in neuro["detail"]:
+            contrib = f"{e['axis']} {e['value']:+d}" if e["axis"] else "—"
+            add(f"| `{e['rsid']}` | {e['gene']} | `{e['genotype']}` | {e['status']} | {contrib} |")
+        add("")
+        add("> ⚠️ Pesos **ilustrativos**. As associações gene→personalidade/cognição (COMT, BDNF, "
+            "DRD2, HTR2A) têm efeito pequeno e replicação fraca — **não** é uma avaliação "
+            "psicológica válida, apenas leitura recreativa/educativa.")
         add("")
 
         add("---")
