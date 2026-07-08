@@ -2,5 +2,7 @@
 data/mtdna_mthap.txt
 data/relatorio.txt
 data/relatorio.md
+data/gedmatch_upload.txt
+data/gedmatch_upload.txt.gz
 __pycache__/
 *.pyc

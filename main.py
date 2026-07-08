@@ -16,6 +16,11 @@ def main():
         help="Formato do relatório. Se omitido, é inferido pela extensão "
              "(.md -> markdown), caindo em 'text'.",
     )
+    parser.add_argument(
+        "-g", "--gedmatch",
+        help="(Opcional) Caminho para exportar o genoma completo no formato "
+             "23andMe/GEDmatch (Build 37, tab-separated).",
+    )
 
     args = parser.parse_args()
 
@@ -24,6 +29,10 @@ def main():
     etl.load_data()
     etl.filter_mitochondrial_dna()
     etl.export_mthap_format(output_path=args.output)
+
+    # Exportação GEDmatch opcional (genoma completo)
+    if args.gedmatch:
+        etl.export_gedmatch_format(output_path=args.gedmatch)
 
     # Relatório estruturado opcional
     if args.report:

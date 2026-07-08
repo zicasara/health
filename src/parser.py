@@ -110,6 +110,42 @@ class GenomicETL:
         )
         return output_path
 
+    def export_gedmatch_format(self, output_path):
+        """
+        Exporta o genoma completo no formato bruto tipo 23andMe, aceite
+        pelo GEDmatch (Build 37/GRCh37 — ver validação no README).
+
+        Formato (separado por tabulações, ordenado por cromossoma e posição):
+            rsid    chromosome    position    genotype
+        """
+        if self.data is None:
+            raise RuntimeError("Os dados ainda não foram carregados. Chame load_data() primeiro.")
+
+        print(f"[+] A exportar formato GEDmatch (23andMe) para: {output_path}")
+
+        export_df = self.data[list(REQUIRED_COLUMNS)].copy()
+
+        # Ordena por cromossoma (1-22, X, Y, MT) e depois por posição numérica.
+        chrom_order = {str(i): i for i in range(1, 23)}
+        chrom_order.update({"X": 23, "Y": 24, "MT": 25, "M": 25})
+        export_df["_C"] = export_df["CHROMOSOME"].str.upper().map(chrom_order).fillna(99)
+        export_df["_P"] = pd.to_numeric(export_df["POSITION"], errors="coerce")
+        export_df = export_df.sort_values(["_C", "_P"], kind="stable")
+
+        with open(output_path, "w", encoding="utf-8", newline="\n") as handle:
+            # Cabeçalho no estilo 23andMe (Build 37). GEDmatch deteta este layout.
+            handle.write("# Dados de genótipo bruto exportados para carregamento no GEDmatch.\n")
+            handle.write("# Assembly: GRCh37/hg19 (Build 37).\n")
+            handle.write("# rsid\tchromosome\tposition\tgenotype\n")
+            for _, row in export_df.iterrows():
+                handle.write(
+                    f"{row['RSID']}\t{row['CHROMOSOME']}\t{row['POSITION']}\t{row['RESULT']}\n"
+                )
+
+        print(f"    Exportação concluída: {len(export_df):,} variantes (genoma completo).")
+        print("    Carregue este ficheiro (ou a versão .gz) em https://www.gedmatch.com/")
+        return output_path
+
     def generate_report(self, output_path=None, fmt=None):
         """
         Gera um relatório estruturado (sexo inferido, ancestralidade e
