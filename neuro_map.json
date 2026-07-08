@@ -1,6 +1,6 @@
 {
   "rs4680": {
-    "gene": "COMT",
+    "gene": "COMT (Val158Met)",
     "pesos": {
       "GG": {"eixo": "Execucao", "valor": 2},
       "AG": {"eixo": "Execucao", "valor": 0},
@@ -8,8 +8,80 @@
     },
     "estrategia": "Estrategia de Foco: se saldo negativo, prefira ambientes de alta estimulacao intelectual."
   },
+  "rs1800497": {
+    "gene": "ANKK1/DRD2 (Taq1A)",
+    "pesos": {
+      "GG": {"eixo": "Execucao", "valor": 1},
+      "AG": {"eixo": "Execucao", "valor": 0},
+      "AA": {"eixo": "Execucao", "valor": -1}
+    },
+    "estrategia": "Recompensa/motivacao: rotinas com metas curtas e reforco frequente sustentam o impulso."
+  },
+  "rs1611115": {
+    "gene": "DBH (noradrenalina)",
+    "pesos": {
+      "CC": {"eixo": "Execucao", "valor": 1},
+      "CT": {"eixo": "Execucao", "valor": 0},
+      "TT": {"eixo": "Execucao", "valor": -1}
+    },
+    "estrategia": "Atencao/noradrenalina: exercicio aerobico e pausas ativas apoiam o foco sustentado."
+  },
+  "rs578776": {
+    "gene": "CHRNA5/3 (atencao)",
+    "pesos": {
+      "GG": {"eixo": "Execucao", "valor": 1},
+      "AG": {"eixo": "Execucao", "valor": 0},
+      "AA": {"eixo": "Execucao", "valor": -1}
+    },
+    "estrategia": "Atencao: ambientes com baixa distracao otimizam a concentracao."
+  },
+  "rs6311": {
+    "gene": "HTR2A (-1438A/G)",
+    "pesos": {
+      "AA": {"eixo": "Resiliencia", "valor": 1},
+      "AG": {"eixo": "Resiliencia", "valor": 0},
+      "GG": {"eixo": "Resiliencia", "valor": -1}
+    },
+    "estrategia": "Resiliencia/serotonina: sono regular e luz matinal estabilizam o humor."
+  },
+  "rs6313": {
+    "gene": "HTR2A (T102C, ligado a rs6311)",
+    "pesos": {
+      "AA": {"eixo": "Resiliencia", "valor": 1},
+      "AG": {"eixo": "Resiliencia", "valor": 0},
+      "GG": {"eixo": "Resiliencia", "valor": -1}
+    },
+    "estrategia": "Resiliencia/serotonina: sono regular e luz matinal estabilizam o humor."
+  },
+  "rs25531": {
+    "gene": "SLC6A4 (ligado a 5-HTTLPR)",
+    "pesos": {
+      "AA": {"eixo": "Resiliencia", "valor": 1},
+      "AG": {"eixo": "Resiliencia", "valor": 0},
+      "GG": {"eixo": "Resiliencia", "valor": -1}
+    },
+    "estrategia": "Regulacao do stress: mindfulness e respiracao reduzem a reatividade emocional."
+  },
+  "rs1799971": {
+    "gene": "OPRM1 (A118G)",
+    "pesos": {
+      "AA": {"eixo": "Resiliencia", "valor": 1},
+      "AG": {"eixo": "Resiliencia", "valor": 0},
+      "GG": {"eixo": "Resiliencia", "valor": -1}
+    },
+    "estrategia": "Recompensa social: vinculos sociais fortes amortecem o stress."
+  },
+  "rs5443": {
+    "gene": "GNB3 (C825T)",
+    "pesos": {
+      "CC": {"eixo": "Resiliencia", "valor": 1},
+      "CT": {"eixo": "Resiliencia", "valor": 0},
+      "TT": {"eixo": "Resiliencia", "valor": -1}
+    },
+    "estrategia": "Energia/humor: atividade fisica regular apoia a regulacao afetiva."
+  },
   "rs6265": {
-    "gene": "BDNF",
+    "gene": "BDNF (Val66Met)",
     "pesos": {
       "GG": {"eixo": "Plasticidade", "valor": 2},
       "AG": {"eixo": "Plasticidade", "valor": 0},
