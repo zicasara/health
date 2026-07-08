@@ -738,108 +738,96 @@ class GenomicReport:
             })
         return results
 
-    # -- Secção 6: perfil neurobiológico (exploratório) --------------------
-    def calcular_score_neuro(self, neuro_map=None):
+    # -- Secção 6: perfil neurobiológico (qualitativo) ---------------------
+    def perfil_neuro(self, neuro_map=None):
         """
-        Perfil neurocomportamental refinado a partir de um mapa (neuro_map.json).
+        Perfil neurobiológico QUALITATIVO (sem pontuação numérica), a partir
+        do mapa (neuro_map.json). Para cada marcador determina um estado
+        funcional — Favorável / Equilibrado / Sensível / Não coberto — e a
+        função do sistema, organizando por eixo. APOE entra como genótipo
+        composto (ε). EXPLORATÓRIO / baixa evidência.
 
-        EXPLORATÓRIO / baixa evidência. Melhorias sobre a soma bruta:
-          - normalização por eixo (% do máximo possível), tornando eixos
-            comparáveis independentemente do nº de marcadores;
-          - agrupamento por LD (campo 'ld_group'): marcadores do mesmo
-            haplótipo são MÉDIA de uma única contribuição (não somam duas vezes);
-          - APOE tratado como genótipo composto (ε2/ε3/ε4) via rs429358+rs7412,
-            em vez do rs7412 isolado (que só deteta ε2);
-          - correção de orientação de cadeia;
-          - estratégias só para áreas deficitárias; nível de evidência por marcador.
-
-        Devolve {'axes', 'detail', 'groups', 'tendency', 'strategies', 'notes'}.
+        Devolve {'axes': {eixo: {markers, narrativa, contagem}}, 'strategies',
+        'notes', 'sintese'}.
         """
         if neuro_map is None:
             neuro_map = load_neuro_map()
 
-        detail = []
-        # contribuições: (eixo, ld_group) -> {'values':[], 'potentials':[], 'neg_strats':[]}
-        contribs = {}
+        by_axis = {a: [] for a in NEURO_AXES}
+        strategies, notes = [], []
 
-        def add_contrib(axis, group, value, potential, strat=None):
-            c = contribs.setdefault((axis, group), {"values": [], "potentials": [], "strats": []})
-            c["values"].append(value)
-            c["potentials"].append(potential)
-            if strat:
-                c["strats"].append(strat)
+        def classify(value):
+            return "Favorável" if value > 0 else "Sensível" if value < 0 else "Equilibrado"
 
         for rsid, info in neuro_map.items():
             if rsid == "rs7412":  # gerido pelo composto APOE
                 continue
             pesos = info.get("pesos", {})
+            # Eixo declarado no primeiro peso (todos os pesos de um marcador partilham eixo).
+            axis = next(iter(pesos.values()), {}).get("eixo") if pesos else None
             genotype = self._genotype.get(rsid)
-            evid = info.get("evidencia", "?")
-            group = info.get("ld_group", rsid)
-            potential = max((abs(v["valor"]) for v in pesos.values()), default=0)
-            entry = {"rsid": rsid, "gene": info.get("gene", "?"), "evidencia": evid,
-                     "ld_group": info.get("ld_group"), "genotype": genotype or "ausente",
-                     "axis": None, "value": 0, "status": ""}
-            if not genotype or genotype in ("--", ""):
-                entry["status"] = "ausente do chip"
-            else:
+            entry = {"rsid": rsid, "gene": info.get("gene", "?"),
+                     "sistema": info.get("sistema", ""), "funcao": info.get("funcao", ""),
+                     "evidencia": info.get("evidencia", "?"), "ld_group": info.get("ld_group"),
+                     "genotype": genotype or "—", "status": "Não coberto"}
+            if genotype and genotype not in ("--", ""):
                 key, flipped = _match_weighted_genotype(genotype, pesos)
                 if key is None:
-                    is_het = len(genotype) == 2 and genotype[0] != genotype[1]
-                    entry["status"] = "não pontuado (heterozigoto)" if is_het else "não pontuado"
+                    entry["status"] = "Equilibrado"
                 else:
-                    axis = pesos[key]["eixo"]
-                    value = pesos[key]["valor"]
-                    entry.update(axis=axis, value=value,
-                                 status="contabilizado" + (" [strand corrigida]" if flipped else ""))
-                    add_contrib(axis, group, value, potential,
-                                info.get("estrategia") if value < 0 else None)
-            detail.append(entry)
+                    entry["status"] = classify(pesos[key]["valor"])
+                    if flipped:
+                        entry["genotype"] = f"{genotype} (=strand {key})"
+                    if entry["status"] == "Sensível" and info.get("estrategia"):
+                        strategies.append(info["estrategia"])
+            if axis in by_axis:
+                by_axis[axis].append(entry)
 
-        notes = []
-        # APOE composto (substitui rs7412 isolado).
+        # APOE composto -> Plasticidade / manutenção.
         apoe = resolve_apoe(self._genotype.get("rs429358"), self._genotype.get("rs7412"))
         if apoe:
-            apoe_val = APOE_NEURO_VALUE.get(apoe, 0)
-            add_contrib("Plasticidade", "APOE", apoe_val, 2,
-                        "APOE: manter integridade lipídica/vascular (dieta, exercício, sono) — "
-                        "especialmente relevante com ε4." if apoe_val < 0 else None)
-            detail.append({"rsid": "APOE", "gene": f"APOE {apoe} (composto)", "evidencia": "alta",
-                           "ld_group": "APOE", "genotype": apoe, "axis": "Plasticidade",
-                           "value": apoe_val,
-                           "status": "composto ε (substitui rs7412 isolado)"})
-            notes.append(f"APOE calculado como {apoe} (rs429358+rs7412), não pelo rs7412 isolado; "
-                         "coerente com a Secção 4.")
+            status = classify(APOE_NEURO_VALUE.get(apoe, 0))
+            by_axis["Plasticidade"].append({
+                "rsid": "APOE", "gene": f"APOE {apoe}", "sistema": "Manutenção lipídica/vascular",
+                "funcao": "Metabolismo lipídico neuronal; risco de declínio cognitivo tardio",
+                "evidencia": "alta", "ld_group": "APOE", "genotype": apoe, "status": status})
+            if status == "Sensível":
+                strategies.append("APOE: preservar integridade lipídica/vascular (dieta mediterrânica, "
+                                  "exercício, sono, controlo de LDL) — relevante com ε4.")
+            notes.append(f"APOE lido como genótipo composto {apoe} (rs429358+rs7412), coerente com a Secção 4.")
 
-        # Média por grupo LD, depois soma/normalização por eixo.
-        axes = {a: {"raw": 0.0, "potential": 0.0, "n_markers": 0, "n_groups": 0} for a in NEURO_AXES}
-        groups_out, strategies = [], []
-        for (axis, group), c in contribs.items():
-            gval = sum(c["values"]) / len(c["values"])
-            gpot = sum(c["potentials"]) / len(c["potentials"])
-            axes[axis]["raw"] += gval
-            axes[axis]["potential"] += gpot
-            axes[axis]["n_markers"] += len(c["values"])
-            axes[axis]["n_groups"] += 1
-            groups_out.append({"axis": axis, "group": group, "value": round(gval, 2),
-                               "n": len(c["values"])})
-            if gval < 0:
-                strategies.extend(c["strats"])
+        # Narrativa por eixo.
+        axes = {}
+        for axis, markers in by_axis.items():
+            cov = [m for m in markers if m["status"] != "Não coberto"]
+            fav = [m for m in cov if m["status"] == "Favorável"]
+            sen = [m for m in cov if m["status"] == "Sensível"]
+            def genes(ms):
+                return ", ".join(dict.fromkeys(m["gene"].split(" ")[0] for m in ms))
+            if not cov:
+                narr = "Sem marcadores cobertos neste eixo."
+            elif sen:
+                narr = (f"Predomínio equilibrado com áreas a apoiar em {genes(sen)}"
+                        + (f"; pontos favoráveis em {genes(fav)}" if fav else "")
+                        + ".")
+            elif fav:
+                narr = (f"Perfil equilibrado a favorável, com destaque positivo em "
+                        f"{genes(fav)}; sem áreas sensíveis.")
+            else:
+                narr = "Perfil totalmente equilibrado (heterozigotos/neutros), sem picos nem défices."
+            axes[axis] = {"markers": markers, "narrativa": narr,
+                          "contagem": {"favoravel": len(fav), "sensivel": len(sen),
+                                       "equilibrado": len(cov) - len(fav) - len(sen),
+                                       "nao_coberto": len(markers) - len(cov)}}
 
-        for a, d in axes.items():
-            pct = (d["raw"] / d["potential"] * 100) if d["potential"] > 0 else 0.0
-            d["pct"] = round(pct, 1)
-            d["raw"] = round(d["raw"], 2)
-            d["potential"] = round(d["potential"], 2)
-            d["band"] = ("Alto" if pct >= 34 else
-                         "Sensível/Exploratório" if pct <= -34 else "Equilibrado")
-
-        exec_pct = axes["Execucao"]["pct"]
-        tendency = ("Perfil Executivo estável" if exec_pct >= 34 else
-                    "Perfil Criativo/Exploratório" if exec_pct <= -34 else
-                    "Perfil Executivo equilibrado")
-        return {"axes": axes, "detail": detail, "groups": groups_out, "tendency": tendency,
-                "strategies": list(dict.fromkeys(strategies)), "notes": notes}
+        total_sen = sum(a["contagem"]["sensivel"] for a in axes.values())
+        total_fav = sum(a["contagem"]["favoravel"] for a in axes.values())
+        sintese = ("Perfil neurobiológico globalmente equilibrado. "
+                   + (f"{total_fav} marcador(es) favorável(eis) e " if total_fav else "")
+                   + (f"{total_sen} área(s) a apoiar." if total_sen
+                      else "nenhuma área sensível assinalada."))
+        return {"axes": axes, "strategies": list(dict.fromkeys(strategies)),
+                "notes": notes, "sintese": sintese}
 
     # -- Composição do relatório -------------------------------------------
     def generate_report(self, output_path=None, fmt="text"):
@@ -941,33 +929,33 @@ class GenomicReport:
         add("      (componentes minoritários de ~3-4% exigem análise genome-wide com painéis).")
         add("")
 
-        neuro = self.calcular_score_neuro()
-        add("[6] PERFIL NEUROBIOLÓGICO (EXPLORATÓRIO — BAIXA EVIDÊNCIA)")
-        add("  -- Resumo por eixo (normalizado: % do máximo possível) --")
-        for axis in NEURO_AXES:
-            a = neuro["axes"][axis]
-            add(f"    {axis}: {a['pct']:+.0f}%  [{a['band']}]  "
-                f"(saldo {a['raw']:+g}/{a['potential']:g}; {a['n_markers']} marcadores)")
-            add(f"        {AXIS_DESCRIPTIONS[axis]}")
-        add(f"    Tendência global: {neuro['tendency']}")
+        neuro = self.perfil_neuro()
+        add("[6] PERFIL NEUROBIOLÓGICO (QUALITATIVO — EXPLORATÓRIO, BAIXA EVIDÊNCIA)")
+        add(f"    Síntese: {neuro['sintese']}")
         for n in neuro["notes"]:
             add(f"    Nota: {n}")
         add("")
-        add("  -- Detalhe dos marcadores (evidência | contribuição) --")
-        for e in neuro["detail"]:
-            contrib = f"{e['axis']} {e['value']:+g}" if e["axis"] else "—"
-            ld = f" [LD:{e['ld_group']}]" if e.get("ld_group") else ""
-            add(f"      [{e['rsid']}] {e['gene']}{ld} | Genótipo: {e['genotype']} "
-                f"| evid:{e.get('evidencia','?')} | {e['status']} ({contrib})")
-        add("")
+        for axis in NEURO_AXES:
+            a = neuro["axes"][axis]
+            c = a["contagem"]
+            add(f"  == {axis.upper()} ==  ({AXIS_DESCRIPTIONS[axis]})")
+            add(f"     Leitura: {a['narrativa']}")
+            add(f"     (favoráveis: {c['favoravel']} | equilibrados: {c['equilibrado']} "
+                f"| sensíveis: {c['sensivel']} | não cobertos: {c['nao_coberto']})")
+            for e in a["markers"]:
+                ld = f" [LD:{e['ld_group']}]" if e.get("ld_group") else ""
+                add(f"       • {e['gene']}{ld} [{e['sistema']}] — Genótipo {e['genotype']} "
+                    f"→ {e['status']} (evid: {e['evidencia']})")
+                add(f"         Função: {e['funcao']}")
+            add("")
         add("  -- Áreas a apoiar (estratégias exploratórias, não terapêuticas) --")
         if neuro["strategies"]:
             for s in neuro["strategies"]:
                 add(f"      - {s}")
         else:
-            add("      Nenhuma área deficitária sinalizada — perfil equilibrado/positivo nos eixos avaliados.")
-        add("    ⚠ Pesos ILUSTRATIVOS; associações gene→personalidade/cognição têm efeito pequeno")
-        add("      e replicação fraca. LD agrupada; APOE composto. NÃO é avaliação psicológica.")
+            add("      Nenhuma área sensível sinalizada — perfil equilibrado nos eixos avaliados.")
+        add("    ⚠ Leitura ILUSTRATIVA por sistema de neurotransmissores. As associações")
+        add("      gene→comportamento têm efeito pequeno e replicação fraca. NÃO é avaliação psicológica.")
         add("")
 
         add("-" * 68)
@@ -1094,46 +1082,39 @@ class GenomicReport:
         add("")
 
         # -- Secção 6 --
-        neuro = self.calcular_score_neuro()
-        add("## 6. Perfil neurobiológico (exploratório — baixa evidência)")
+        neuro = self.perfil_neuro()
+        add("## 6. Perfil neurobiológico (qualitativo — exploratório, baixa evidência)")
         add("")
-        add("**Resumo por eixo** (normalizado — % do máximo possível dado os marcadores lidos):")
-        add("")
-        add("| Eixo | Score | Faixa | Saldo | Marcadores | O que representa |")
-        add("|------|:-----:|:-----:|:-----:|:----------:|------------------|")
-        for axis in NEURO_AXES:
-            a = neuro["axes"][axis]
-            add(f"| {axis} | {a['pct']:+.0f}% | {a['band']} | {a['raw']:+g}/{a['potential']:g} "
-                f"| {a['n_markers']} | {AXIS_DESCRIPTIONS[axis]} |")
-        add("")
-        add(f"**Tendência global:** {neuro['tendency']}")
+        add(f"**Síntese:** {neuro['sintese']}")
         add("")
         for n in neuro["notes"]:
             add(f"> ℹ️ {n}")
         if neuro["notes"]:
             add("")
-        add("**Detalhe dos marcadores:**")
-        add("")
-        add("| RSID | Gene | LD | Genótipo | Evidência | Estado | Contribuição |")
-        add("|------|------|----|:--------:|:---------:|--------|:------------:|")
-        for e in neuro["detail"]:
-            contrib = f"{e['axis']} {e['value']:+g}" if e["axis"] else "—"
-            ld = e.get("ld_group") or "—"
-            add(f"| `{e['rsid']}` | {e['gene']} | {ld} | `{e['genotype']}` "
-                f"| {e.get('evidencia','?')} | {e['status']} | {contrib} |")
-        add("")
+        for axis in NEURO_AXES:
+            a = neuro["axes"][axis]
+            add(f"### {axis} — {AXIS_DESCRIPTIONS[axis]}")
+            add("")
+            add(f"_{a['narrativa']}_")
+            add("")
+            add("| Gene | Sistema | Genótipo | Estado | Evid. | Função |")
+            add("|------|---------|:--------:|:------:|:-----:|--------|")
+            for e in a["markers"]:
+                gene = e["gene"] + (f" · LD:{e['ld_group']}" if e.get("ld_group") else "")
+                add(f"| {gene} | {e['sistema']} | `{e['genotype']}` | **{e['status']}** "
+                    f"| {e['evidencia']} | {e['funcao']} |")
+            add("")
         add("**Áreas a apoiar** (estratégias exploratórias, não terapêuticas):")
         add("")
         if neuro["strategies"]:
             for s in neuro["strategies"]:
                 add(f"- {s}")
         else:
-            add("- _Nenhuma área deficitária sinalizada — perfil equilibrado/positivo nos eixos avaliados._")
+            add("- _Nenhuma área sensível sinalizada — perfil equilibrado nos eixos avaliados._")
         add("")
-        add("> ⚠️ Pesos **ilustrativos**. Scores normalizados e agrupados por LD; APOE tratado como "
-            "genótipo composto (ε). As associações gene→personalidade/cognição têm efeito pequeno e "
-            "replicação fraca — **não** é uma avaliação psicológica válida nem aconselhamento "
-            "terapêutico, apenas leitura recreativa/educativa.")
+        add("> ⚠️ Leitura **ilustrativa** por sistema de neurotransmissores; APOE como genótipo composto (ε). "
+            "As associações gene→comportamento têm efeito pequeno e replicação fraca — **não** é uma "
+            "avaliação psicológica válida nem aconselhamento terapêutico.")
         add("")
 
         add("---")
