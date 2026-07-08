@@ -1,0 +1,494 @@
+{
+  "rs4680": {
+    "gene": "COMT (Val158Met)",
+    "sistema": "Dopamina pré-frontal",
+    "funcao": "Degrada dopamina no córtex; modula foco vs. flexibilidade",
+    "pesos": {
+      "GG": {
+        "eixo": "Execucao",
+        "valor": 2
+      },
+      "AG": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Execucao",
+        "valor": -2
+      }
+    },
+    "estrategia": "Se sensível, ambientes de alta estimulacao intelectual ajudam o foco.",
+    "evidencia": "alta",
+    "ld_group": "COMT"
+  },
+  "rs165599": {
+    "gene": "COMT (3'UTR)",
+    "sistema": "Dopamina pré-frontal",
+    "funcao": "Expressão de COMT (ligado a rs4680)",
+    "pesos": {
+      "GG": {
+        "eixo": "Execucao",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Execucao",
+        "valor": -1
+      }
+    },
+    "estrategia": "Ver COMT.",
+    "evidencia": "baixa",
+    "ld_group": "COMT"
+  },
+  "rs1800497": {
+    "gene": "ANKK1/DRD2 (Taq1A)",
+    "sistema": "Dopamina/recompensa",
+    "funcao": "Densidade de recetores D2; motivação e reforço",
+    "pesos": {
+      "GG": {
+        "eixo": "Execucao",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Execucao",
+        "valor": -1
+      }
+    },
+    "estrategia": "Metas curtas e reforco frequente sustentam o impulso.",
+    "evidencia": "media"
+  },
+  "rs6280": {
+    "gene": "DRD3 (Ser9Gly)",
+    "sistema": "Dopamina límbica",
+    "funcao": "Afinidade do recetor D3; controlo de impulso",
+    "pesos": {
+      "CC": {
+        "eixo": "Execucao",
+        "valor": 1
+      },
+      "CT": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "TT": {
+        "eixo": "Execucao",
+        "valor": -1
+      }
+    },
+    "estrategia": "Estrutura e previsibilidade favorecem a execucao.",
+    "evidencia": "media"
+  },
+  "rs1611115": {
+    "gene": "DBH",
+    "sistema": "Noradrenalina",
+    "funcao": "Converte dopamina em noradrenalina; vigilância/atenção",
+    "pesos": {
+      "CC": {
+        "eixo": "Execucao",
+        "valor": 1
+      },
+      "CT": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "TT": {
+        "eixo": "Execucao",
+        "valor": -1
+      }
+    },
+    "estrategia": "Exercicio aerobico e pausas ativas apoiam o foco sustentado.",
+    "evidencia": "media"
+  },
+  "rs578776": {
+    "gene": "CHRNA5/3",
+    "sistema": "Acetilcolina/atenção",
+    "funcao": "Recetores nicotínicos; atenção e resposta a nicotina",
+    "pesos": {
+      "GG": {
+        "eixo": "Execucao",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Execucao",
+        "valor": -1
+      }
+    },
+    "estrategia": "Ambientes com baixa distracao otimizam a concentracao.",
+    "evidencia": "baixa"
+  },
+  "rs1801260": {
+    "gene": "CLOCK (3111T/C)",
+    "sistema": "Ritmo circadiano",
+    "funcao": "Relógio molecular; cronótipo e horário de pico",
+    "pesos": {
+      "GG": {
+        "eixo": "Execucao",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Execucao",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Execucao",
+        "valor": -1
+      }
+    },
+    "estrategia": "Alinhe tarefas exigentes com o seu horario de pico cognitivo.",
+    "evidencia": "media"
+  },
+  "rs6311": {
+    "gene": "HTR2A (-1438A/G)",
+    "sistema": "Serotonina",
+    "funcao": "Expressão do recetor 5-HT2A; humor e reatividade",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Sono regular e luz matinal estabilizam o humor.",
+    "evidencia": "media",
+    "ld_group": "HTR2A"
+  },
+  "rs6313": {
+    "gene": "HTR2A (T102C)",
+    "sistema": "Serotonina",
+    "funcao": "Recetor 5-HT2A (ligado a rs6311)",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Ver HTR2A.",
+    "evidencia": "baixa",
+    "ld_group": "HTR2A"
+  },
+  "rs25531": {
+    "gene": "SLC6A4 (5-HTTLPR)",
+    "sistema": "Serotonina/transporte",
+    "funcao": "Recaptação de serotonina; sensibilidade ao stress",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Mindfulness e respiracao reduzem a reatividade emocional.",
+    "evidencia": "media"
+  },
+  "rs1799971": {
+    "gene": "OPRM1 (A118G)",
+    "sistema": "Opioide/social",
+    "funcao": "Recetor µ-opioide; recompensa social e dor",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Vinculos sociais fortes amortecem o stress.",
+    "evidencia": "media"
+  },
+  "rs324420": {
+    "gene": "FAAH (C385A)",
+    "sistema": "Endocanabinoide",
+    "funcao": "Degrada anandamida; extinção do medo e ansiedade",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AC": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "CC": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Exercicio e exposicao gradual apoiam a regulacao emocional.",
+    "evidencia": "media"
+  },
+  "rs1049353": {
+    "gene": "CNR1",
+    "sistema": "Endocanabinoide",
+    "funcao": "Recetor CB1; regulação afetiva e recompensa",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Rotinas de relaxamento e atividade prazerosa.",
+    "evidencia": "baixa"
+  },
+  "rs279858": {
+    "gene": "GABRA2",
+    "sistema": "GABA/inibição",
+    "funcao": "Subunidade do recetor GABA-A; tónus inibitório e ansiedade",
+    "pesos": {
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Se sensível: respiração lenta, ioga e sono priorizam a inibição.",
+    "evidencia": "media",
+    "ld_group": "GABRA2"
+  },
+  "rs701492": {
+    "gene": "GAD1",
+    "sistema": "GABA/síntese",
+    "funcao": "Glutamato-descarboxilase: converte glutamato em GABA",
+    "pesos": {
+      "CC": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "CT": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "TT": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Aporte de vitamina B6 e sono apoiam a síntese de GABA.",
+    "evidencia": "baixa"
+  },
+  "rs3750344": {
+    "gene": "GABRA6",
+    "sistema": "GABA/inibição",
+    "funcao": "Subunidade GABA-A; resposta a stress e sedação",
+    "pesos": {
+      "CC": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "CT": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "TT": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Técnicas de downregulation noturna (meditação).",
+    "evidencia": "baixa"
+  },
+  "rs4713916": {
+    "gene": "FKBP5",
+    "sistema": "Stress/HPA (cortisol)",
+    "funcao": "Regula o recetor de glucocorticoides; recuperação do stress",
+    "pesos": {
+      "GG": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Higiene do sono e gestão de stress crónico protegem o eixo HPA.",
+    "evidencia": "media"
+  },
+  "rs5443": {
+    "gene": "GNB3 (C825T)",
+    "sistema": "Sinalização/energia",
+    "funcao": "Transdução de sinal; energia e humor",
+    "pesos": {
+      "CC": {
+        "eixo": "Resiliencia",
+        "valor": 1
+      },
+      "CT": {
+        "eixo": "Resiliencia",
+        "valor": 0
+      },
+      "TT": {
+        "eixo": "Resiliencia",
+        "valor": -1
+      }
+    },
+    "estrategia": "Atividade fisica regular apoia a regulacao afetiva.",
+    "evidencia": "baixa"
+  },
+  "rs6265": {
+    "gene": "BDNF (Val66Met)",
+    "sistema": "Neuroplasticidade",
+    "funcao": "Fator neurotrófico; aprendizagem e memória",
+    "pesos": {
+      "GG": {
+        "eixo": "Plasticidade",
+        "valor": 2
+      },
+      "AG": {
+        "eixo": "Plasticidade",
+        "valor": 0
+      },
+      "AA": {
+        "eixo": "Plasticidade",
+        "valor": -2
+      }
+    },
+    "estrategia": "Novos idiomas ou habilidades complexas aceleram a sinaptogenese.",
+    "evidencia": "alta",
+    "ld_group": "BDNF"
+  },
+  "rs11030104": {
+    "gene": "BDNF (região, LD)",
+    "sistema": "Neuroplasticidade",
+    "funcao": "BDNF (ligado a rs6265)",
+    "pesos": {
+      "AA": {
+        "eixo": "Plasticidade",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Plasticidade",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Plasticidade",
+        "valor": -1
+      }
+    },
+    "estrategia": "Ver BDNF.",
+    "evidencia": "baixa",
+    "ld_group": "BDNF"
+  },
+  "rs1801133": {
+    "gene": "MTHFR (C677T)",
+    "sistema": "Metilação/folato",
+    "funcao": "Ciclo do folato; síntese de neurotransmissores",
+    "pesos": {
+      "CC": {
+        "eixo": "Plasticidade",
+        "valor": -1
+      },
+      "CT": {
+        "eixo": "Plasticidade",
+        "valor": 0
+      },
+      "TT": {
+        "eixo": "Plasticidade",
+        "valor": 1
+      }
+    },
+    "estrategia": "Se sensível, otimizar aporte de folatos (verduras, B-complexo).",
+    "evidencia": "alta",
+    "ld_group": "MTHFR"
+  },
+  "rs1801131": {
+    "gene": "MTHFR (A1298C)",
+    "sistema": "Metilação/folato",
+    "funcao": "Ciclo do folato (ligado a C677T)",
+    "pesos": {
+      "TT": {
+        "eixo": "Plasticidade",
+        "valor": 0
+      },
+      "TG": {
+        "eixo": "Plasticidade",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Plasticidade",
+        "valor": -1
+      }
+    },
+    "estrategia": "Ver MTHFR C677T.",
+    "evidencia": "baixa",
+    "ld_group": "MTHFR"
+  },
+  "rs11122606": {
+    "gene": "glutamato/LTP",
+    "sistema": "Glutamato",
+    "funcao": "Sinalização glutamatérgica; potenciação de longo prazo",
+    "pesos": {
+      "AA": {
+        "eixo": "Plasticidade",
+        "valor": 1
+      },
+      "AG": {
+        "eixo": "Plasticidade",
+        "valor": 0
+      },
+      "GG": {
+        "eixo": "Plasticidade",
+        "valor": -1
+      }
+    },
+    "estrategia": "Aprendizagem de alta complexidade exige input constante.",
+    "evidencia": "baixa"
+  }
+}

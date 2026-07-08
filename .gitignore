@@ -1,0 +1,10 @@
+# Artefactos gerados pelo pipeline
+data/mtdna_mthap.txt
+data/relatorio.txt
+data/relatorio.md
+data/gedmatch_upload.txt
+data/gedmatch_upload.txt.gz
+data/ancestrydna_upload.txt
+data/ancestrydna_upload.txt.gz
+__pycache__/
+*.pyc

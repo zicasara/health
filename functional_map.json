@@ -1,0 +1,578 @@
+{
+  "rs1801133": {
+    "categoria": "Nutrigenetica",
+    "gene": "MTHFR (C677T)",
+    "funcao": "Ciclo do folato / metilação",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Alelo T reduz a atividade da MTHFR: assegurar metilfolato (B9) e B12 adequados.",
+    "evidencia": "alta"
+  },
+  "rs1801131": {
+    "categoria": "Nutrigenetica",
+    "gene": "MTHFR (A1298C)",
+    "funcao": "Ciclo do folato",
+    "pesos": {
+      "TT": {
+        "valor": 0
+      },
+      "TG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Variante A1298C: apoia a via da metilação junto com C677T.",
+    "evidencia": "baixa"
+  },
+  "rs4988235": {
+    "categoria": "Nutrigenetica",
+    "gene": "LCT/MCM6",
+    "funcao": "Persistência da lactase",
+    "pesos": {
+      "AA": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Genótipo de não-persistência: possível intolerância à lactose.",
+    "evidencia": "alta"
+  },
+  "rs762551": {
+    "categoria": "Nutrigenetica",
+    "gene": "CYP1A2",
+    "funcao": "Metabolismo da cafeína",
+    "pesos": {
+      "AA": {
+        "valor": 0
+      },
+      "AC": {
+        "valor": 1
+      },
+      "CC": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Metabolizador lento de cafeína: moderar café, evitar à tarde.",
+    "evidencia": "media"
+  },
+  "rs9939609": {
+    "categoria": "Nutrigenetica",
+    "gene": "FTO",
+    "funcao": "Apetite / regulação de peso",
+    "pesos": {
+      "TT": {
+        "valor": 0
+      },
+      "AT": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Alelo A associado a maior apetite: atenção à saciedade e proteína/fibra.",
+    "evidencia": "media"
+  },
+  "rs1801282": {
+    "categoria": "Nutrigenetica",
+    "gene": "PPARG (Pro12Ala)",
+    "funcao": "Sensibilidade à insulina / gordura",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "CG": {
+        "valor": 0
+      },
+      "CC": {
+        "valor": 1
+      }
+    },
+    "estrategia": "Genótipo Pro/Pro: preferir gorduras mono/poli-insaturadas.",
+    "evidencia": "baixa"
+  },
+  "rs5082": {
+    "categoria": "Nutrigenetica",
+    "gene": "APOA2",
+    "funcao": "Resposta a gordura saturada",
+    "pesos": {
+      "AA": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Sensibilidade a gordura saturada: limitar gordura saturada.",
+    "evidencia": "baixa"
+  },
+  "rs602662": {
+    "categoria": "Nutrigenetica",
+    "gene": "FUT2",
+    "funcao": "Estado secretor / vitamina B12",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Estado secretor pode baixar B12: monitorizar níveis.",
+    "evidencia": "media"
+  },
+  "rs174546": {
+    "categoria": "Nutrigenetica",
+    "gene": "FADS1",
+    "funcao": "Conversão de ómega-3 (ALA→EPA/DHA)",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Conversão reduzida: preferir EPA/DHA pré-formados (peixe gordo).",
+    "evidencia": "media"
+  },
+  "rs2282679": {
+    "categoria": "Nutrigenetica",
+    "gene": "GC (VDBP)",
+    "funcao": "Transporte de vitamina D",
+    "pesos": {
+      "TT": {
+        "valor": 0
+      },
+      "TG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Predisposição a vitamina D mais baixa: monitorizar 25-OH-D.",
+    "evidencia": "media"
+  },
+  "rs12785878": {
+    "categoria": "Nutrigenetica",
+    "gene": "DHCR7",
+    "funcao": "Síntese de vitamina D",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Corrobora predisposição a vitamina D baixa.",
+    "evidencia": "media"
+  },
+  "rs7501331": {
+    "categoria": "Nutrigenetica",
+    "gene": "BCMO1",
+    "funcao": "Conversão de beta-caroteno em vitamina A",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Conversão reduzida: considerar vitamina A pré-formada (retinol).",
+    "evidencia": "baixa"
+  },
+  "rs1799945": {
+    "categoria": "Nutrigenetica",
+    "gene": "HFE (H63D)",
+    "funcao": "Absorção de ferro",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Portadora de H63D: cautela com suplementos de ferro/excesso.",
+    "evidencia": "media"
+  },
+  "rs4654748": {
+    "categoria": "Nutrigenetica",
+    "gene": "ALPL/NBPF3",
+    "funcao": "Estado de vitamina B6",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Tendência a B6 mais baixa: assegurar aporte de B6.",
+    "evidencia": "baixa"
+  },
+  "rs1049353": {
+    "categoria": "Inflamatorio",
+    "gene": "CNR1",
+    "funcao": "Recetor endocanabinoide CB1",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Modulação endocanabinoide: evitar dietas altamente pró-inflamatórias.",
+    "evidencia": "baixa"
+  },
+  "rs1800629": {
+    "categoria": "Inflamatorio",
+    "gene": "TNF-alfa (-308)",
+    "funcao": "Citocina pró-inflamatória",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Alelo A eleva TNF-α: dieta anti-inflamatória (ómega-3, polifenóis).",
+    "evidencia": "media"
+  },
+  "rs1800795": {
+    "categoria": "Inflamatorio",
+    "gene": "IL6 (-174)",
+    "funcao": "Interleucina-6",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 1
+      }
+    },
+    "estrategia": "Tendência a IL-6 mais alta: apoio anti-inflamatório e exercício.",
+    "evidencia": "baixa"
+  },
+  "rs16944": {
+    "categoria": "Inflamatorio",
+    "gene": "IL1B",
+    "funcao": "Interleucina-1β",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Perfil inflamatório aumentado: gestão de stress e dieta.",
+    "evidencia": "baixa"
+  },
+  "rs1695": {
+    "categoria": "Inflamatorio",
+    "gene": "GSTP1 (Ile105Val)",
+    "funcao": "Detoxificação fase II / oxidativo",
+    "pesos": {
+      "AA": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Detoxificação reduzida: apoiar com crucíferas (brócolos, couve).",
+    "evidencia": "media"
+  },
+  "rs1050450": {
+    "categoria": "Inflamatorio",
+    "gene": "GPX1",
+    "funcao": "Glutationa-peroxidase (antioxidante)",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Capacidade antioxidante reduzida: assegurar selénio.",
+    "evidencia": "baixa"
+  },
+  "rs1800896": {
+    "categoria": "Inflamatorio",
+    "gene": "IL10",
+    "funcao": "Citocina anti-inflamatória",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Menor produção de IL-10 (anti-inflamatória): reforço anti-inflamatório.",
+    "evidencia": "baixa"
+  },
+  "rs4680": {
+    "categoria": "Farmacogenetica",
+    "gene": "COMT (Val158Met)",
+    "funcao": "Metabolismo de catecolaminas",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Sensibilidade a estimulantes (cafeína/fármacos): metabolização mais lenta de catecolaminas.",
+    "evidencia": "media"
+  },
+  "rs9923231": {
+    "categoria": "Farmacogenetica",
+    "gene": "VKORC1",
+    "funcao": "Sensibilidade à varfarina",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Sensibilidade aumentada à varfarina: dose possivelmente mais baixa.",
+    "evidencia": "alta"
+  },
+  "rs4149056": {
+    "categoria": "Farmacogenetica",
+    "gene": "SLCO1B1",
+    "funcao": "Miopatia por estatinas",
+    "pesos": {
+      "TT": {
+        "valor": 0
+      },
+      "TC": {
+        "valor": 1
+      },
+      "CC": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Risco intermédio/alto de miopatia por estatinas (esp. sinvastatina).",
+    "evidencia": "alta"
+  },
+  "rs12248560": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP2C19*17",
+    "funcao": "Metabolizador ultrarrápido",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "CYP2C19 rápido: pode reduzir eficácia de alguns fármacos (PPIs, alguns antidepressivos).",
+    "evidencia": "media"
+  },
+  "rs1799853": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP2C9*2",
+    "funcao": "Metabolismo de AINEs/varfarina",
+    "pesos": {
+      "CC": {
+        "valor": 0
+      },
+      "CT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Portador *2 reduz metabolismo (sem alelo *2 = normal).",
+    "evidencia": "alta"
+  },
+  "rs4244285": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP2C19*2",
+    "funcao": "Metabolizador lento (clopidogrel)",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Alelo *2 reduz ativação de clopidogrel (sem *2 = normal).",
+    "evidencia": "alta"
+  },
+  "rs3745274": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP2B6 (*6)",
+    "funcao": "Metaboliza bupropiona, cetamina, metadona, efavirenz",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Portador *6 reduz metabolismo (sem *6 = normal).",
+    "evidencia": "media"
+  },
+  "rs35599367": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP3A4 (*22)",
+    "funcao": "Metaboliza estatinas, fentanil, alguns antidepressivos",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GA": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Portador *22 reduz atividade (sem *22 = normal).",
+    "evidencia": "media"
+  },
+  "rs1799971": {
+    "categoria": "Farmacogenetica",
+    "gene": "OPRM1 (A118G)",
+    "funcao": "Recetor µ-opioide: requisito de dose de opioides",
+    "pesos": {
+      "AA": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Alelo G pode exigir doses mais altas de opioides para analgesia.",
+    "evidencia": "media"
+  },
+  "rs13277113": {
+    "categoria": "Susceptibilidade",
+    "gene": "BLK (autoimune)",
+    "funcao": "Locus de risco partilhado (lúpus/AR)",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GA": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Um alelo de risco autoimune (BLK): NÃO diagnóstico; risco poligénico.",
+    "evidencia": "baixa"
+  },
+  "rs1495741": {
+    "categoria": "Susceptibilidade",
+    "gene": "NAT2 (tag acetilação)",
+    "funcao": "Acetilação de fármacos (lúpus induzido)",
+    "pesos": {
+      "GG": {
+        "valor": 2
+      },
+      "GA": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 0
+      }
+    },
+    "estrategia": "Estado de acetilador incompleto (NAT2*5 não coberto): não é possível classificar de forma fiável.",
+    "evidencia": "media"
+  }
+}
