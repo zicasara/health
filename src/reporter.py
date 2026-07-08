@@ -454,19 +454,48 @@ ANCESTRY_DIAGNOSTIC = {
 # ==========================================================================
 # SECÇÃO 6: PERFIL NEUROBIOLÓGICO (EXPLORATÓRIO — BAIXA EVIDÊNCIA)
 # ==========================================================================
-# Pontuação por eixos a partir de variantes candidatas. Os pesos são
-# ILUSTRATIVOS: as associações gene→personalidade/cognição (COMT, BDNF,
-# DRD2, HTR2A) têm efeitos pequenos e replicação fraca. NÃO é uma avaliação
-# psicológica válida — leitura recreativa/educativa apenas.
-NEURO_WEIGHTS = {
-    "rs4680":    {"gene": "COMT",       "axis_by_geno": {"GG": ("Execucao", 2),   "AA": ("Execucao", -2)}},
-    "rs6265":    {"gene": "BDNF",       "axis_by_geno": {"GG": ("Plasticidade", 2), "AA": ("Plasticidade", -1)}},
-    "rs1800497": {"gene": "ANKK1/DRD2", "axis_by_geno": {"CC": ("Execucao", 1),   "TT": ("Execucao", -1)}},
-    "rs6311":    {"gene": "HTR2A",      "axis_by_geno": {"AA": ("Resiliencia", 1), "GG": ("Resiliencia", -1)}},
-}
+# Pontuação por eixos a partir de variantes candidatas, guiada por um mapa
+# externo (neuro_map.json) editável. Os pesos são ILUSTRATIVOS: as
+# associações gene→personalidade/cognição (COMT, BDNF, DRD2, HTR2A) têm
+# efeitos pequenos e replicação fraca. NÃO é uma avaliação psicológica
+# válida nem aconselhamento terapêutico — leitura recreativa/educativa.
 NEURO_AXES = ("Execucao", "Resiliencia", "Plasticidade")
 
+# Mapa por omissão (esquema idêntico ao neuro_map.json).
+DEFAULT_NEURO_MAP = {
+    "rs4680": {
+        "gene": "COMT",
+        "pesos": {"GG": {"eixo": "Execucao", "valor": 2},
+                  "AG": {"eixo": "Execucao", "valor": 0},
+                  "AA": {"eixo": "Execucao", "valor": -2}},
+        "estrategia": "Estrategia de Foco: se saldo negativo, prefira ambientes de alta estimulacao intelectual.",
+    },
+    "rs6265": {
+        "gene": "BDNF",
+        "pesos": {"GG": {"eixo": "Plasticidade", "valor": 2},
+                  "AG": {"eixo": "Plasticidade", "valor": 0},
+                  "AA": {"eixo": "Plasticidade", "valor": -2}},
+        "estrategia": "Neuroplasticidade: praticar novos idiomas ou habilidades complexas acelera o desenvolvimento sinaptico.",
+    },
+}
+
 _COMPLEMENT = {"A": "T", "T": "A", "C": "G", "G": "C"}
+
+
+def load_neuro_map(path=None):
+    """
+    Carrega o mapa neuro de um ficheiro JSON. Se não for dado caminho,
+    procura neuro_map.json na raiz do projeto; caindo no DEFAULT_NEURO_MAP.
+    """
+    import json
+    import os
+    candidate = path or os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "neuro_map.json")
+    try:
+        with open(candidate, "r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except (FileNotFoundError, ValueError):
+        return DEFAULT_NEURO_MAP
 
 
 def _match_weighted_genotype(genotype, weight_map):
@@ -698,40 +727,50 @@ class GenomicReport:
         return results
 
     # -- Secção 6: perfil neurobiológico (exploratório) --------------------
-    def calcular_score_neuro(self):
+    def calcular_score_neuro(self, neuro_map=None):
         """
-        Pontua eixos neurocomportamentais a partir de variantes candidatas.
+        Pontua eixos neurocomportamentais a partir de um mapa (neuro_map.json).
 
-        EXPLORATÓRIO / baixa evidência. Corrige orientação de cadeia e trata
-        heterozigotos como neutros (os pesos só definem homozigotos).
-        Devolve {'scores': {...}, 'detail': [...], 'tendency': str}.
+        EXPLORATÓRIO / baixa evidência. Corrige orientação de cadeia (o chip
+        pode reportar a cadeia complementar) antes de aplicar os pesos, e
+        recolhe as estratégias associadas. `neuro_map` pode ser um dict já
+        carregado ou None (usa load_neuro_map()).
+
+        Devolve {'scores', 'detail', 'tendency', 'strategies'}.
         """
+        if neuro_map is None:
+            neuro_map = load_neuro_map()
+
         scores = {axis: 0 for axis in NEURO_AXES}
-        detail = []
-        for rsid, info in NEURO_WEIGHTS.items():
+        detail, strategies = [], []
+        for rsid, info in neuro_map.items():
+            pesos = info.get("pesos", {})
             genotype = self._genotype.get(rsid)
-            entry = {"rsid": rsid, "gene": info["gene"],
+            entry = {"rsid": rsid, "gene": info.get("gene", "?"),
                      "genotype": genotype or "ausente", "axis": None, "value": 0,
                      "status": ""}
             if not genotype or genotype in ("--", ""):
                 entry["status"] = "ausente do chip"
             else:
-                key, flipped = _match_weighted_genotype(genotype, info["axis_by_geno"])
+                key, flipped = _match_weighted_genotype(genotype, pesos)
                 if key is None:
-                    # Heterozigoto ou genótipo não pontuado.
                     is_het = len(genotype) == 2 and genotype[0] != genotype[1]
-                    entry["status"] = "neutro (heterozigoto)" if is_het else "neutro (não pontuado)"
+                    entry["status"] = "não pontuado (heterozigoto)" if is_het else "não pontuado"
                 else:
-                    axis, value = info["axis_by_geno"][key]
-                    scores[axis] += value
+                    axis = pesos[key]["eixo"]
+                    value = pesos[key]["valor"]
+                    scores[axis] = scores.get(axis, 0) + value
                     entry.update(axis=axis, value=value,
                                  status="contabilizado" + (" [strand corrigida]" if flipped else ""))
+                    if info.get("estrategia"):
+                        strategies.append(info["estrategia"])
             detail.append(entry)
 
         tendency = ("Perfil Executivo estável" if scores["Execucao"] > 0
                     else "Perfil Criativo/Exploratório" if scores["Execucao"] < 0
                     else "Perfil Executivo equilibrado (neutro)")
-        return {"scores": scores, "detail": detail, "tendency": tendency}
+        return {"scores": scores, "detail": detail, "tendency": tendency,
+                "strategies": list(dict.fromkeys(strategies))}  # únicas, ordem preservada
 
     # -- Composição do relatório -------------------------------------------
     def generate_report(self, output_path=None, fmt="text"):
@@ -843,8 +882,12 @@ class GenomicReport:
             contrib = f"{e['axis']} {e['value']:+d}" if e["axis"] else "—"
             add(f"      [{e['rsid']}] {e['gene']} | Genótipo: {e['genotype']} "
                 f"| {e['status']} ({contrib})")
+        if neuro["strategies"]:
+            add("    Sugestões de estilo de vida (exploratórias, não terapêuticas):")
+            for s in neuro["strategies"]:
+                add(f"      - {s}")
         add("    ⚠ Pesos ILUSTRATIVOS; associações gene→personalidade/cognição têm efeito")
-        add("      pequeno e replicação fraca. NÃO é avaliação psicológica — uso recreativo.")
+        add("      pequeno e replicação fraca. NÃO é avaliação psicológica nem terapia.")
         add("")
 
         add("-" * 68)
@@ -987,9 +1030,15 @@ class GenomicReport:
             contrib = f"{e['axis']} {e['value']:+d}" if e["axis"] else "—"
             add(f"| `{e['rsid']}` | {e['gene']} | `{e['genotype']}` | {e['status']} | {contrib} |")
         add("")
-        add("> ⚠️ Pesos **ilustrativos**. As associações gene→personalidade/cognição (COMT, BDNF, "
-            "DRD2, HTR2A) têm efeito pequeno e replicação fraca — **não** é uma avaliação "
-            "psicológica válida, apenas leitura recreativa/educativa.")
+        if neuro["strategies"]:
+            add("**Sugestões de estilo de vida** (exploratórias, não terapêuticas):")
+            add("")
+            for s in neuro["strategies"]:
+                add(f"- {s}")
+            add("")
+        add("> ⚠️ Pesos **ilustrativos**. As associações gene→personalidade/cognição (COMT, BDNF) "
+            "têm efeito pequeno e replicação fraca — **não** é uma avaliação psicológica válida "
+            "nem aconselhamento terapêutico, apenas leitura recreativa/educativa.")
         add("")
 
         add("---")

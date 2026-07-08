@@ -1,0 +1,20 @@
+{
+  "rs4680": {
+    "gene": "COMT",
+    "pesos": {
+      "GG": {"eixo": "Execucao", "valor": 2},
+      "AG": {"eixo": "Execucao", "valor": 0},
+      "AA": {"eixo": "Execucao", "valor": -2}
+    },
+    "estrategia": "Estrategia de Foco: se saldo negativo, prefira ambientes de alta estimulacao intelectual."
+  },
+  "rs6265": {
+    "gene": "BDNF",
+    "pesos": {
+      "GG": {"eixo": "Plasticidade", "valor": 2},
+      "AG": {"eixo": "Plasticidade", "valor": 0},
+      "AA": {"eixo": "Plasticidade", "valor": -2}
+    },
+    "estrategia": "Neuroplasticidade: praticar novos idiomas ou habilidades complexas acelera o desenvolvimento sinaptico."
+  }
+}
