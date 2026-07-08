@@ -388,6 +388,69 @@ APOE_INTERPRETATION = {
     "ε4/ε4": "Duas cópias ε4 — risco de Alzheimer substancialmente aumentado",
 }
 
+# ==========================================================================
+# SECÇÃO 5: ANCESTRALIDADE & FENÓTIPO GLOBAL
+# ==========================================================================
+
+# --- (a) Predição de pigmentação (subconjunto do painel HIrisPlex-S) ------
+# Modelo direcional simplificado: cada traço é decidido pelos SNPs de maior
+# efeito presentes no chip. NÃO é a probabilidade forense validada (que exige
+# os 41 SNPs e coeficientes do modelo multinomial), mas segue a mesma direção.
+PIGMENT_EYE = {  # rs12913832 (HERC2) — preditor dominante da cor dos olhos
+    "GG": "Olhos claros prováveis (azul/verde)",
+    "AG": "Cor intermédia — provável castanho/avelã",
+    "GA": "Cor intermédia — provável castanho/avelã",
+    "AA": "Olhos escuros prováveis (castanho)",
+}
+PIGMENT_SKIN = {  # rs16891982 (SLC45A2) — forte preditor da tonalidade da pele
+    "GG": "Pele clara (típico europeu)",
+    "CG": "Pele intermédia",
+    "GC": "Pele intermédia",
+    "CC": "Pele mais escura",
+}
+# Marcadores completos do painel HIrisPlex-S (para calcular a cobertura).
+HIRISPLEX_PANEL = [
+    "rs312262906","rs11547464","rs885479","rs1805008","rs1805005","rs1805006",
+    "rs1805007","rs1805009","rs201326893","rs2228479","rs1110400","rs28777",
+    "rs16891982","rs12821256","rs4959270","rs12203592","rs1042602","rs1800407",
+    "rs2402130","rs12913832","rs2378249","rs12896399","rs1393350","rs683",
+    "rs3114908","rs1800414","rs10756819","rs2238289","rs17128291","rs6497292",
+    "rs1129038","rs1667394","rs1126809","rs1470608","rs1426654","rs17422",
+    "rs6119471","rs1545397","rs8051733","rs2069945","rs1015362",
+]
+
+# --- (b) Rastreio da linhagem materna (mtDNA, exclusionário) ---------------
+# Posição rCRS -> (alelo derivado, macro-linhagem, significado). Só usamos
+# posições com base limpa (A/C/G/T). Concebido para EXCLUIR linhagens, não
+# para atribuir um haplogrupo definitivo (isso é tarefa do mtHap).
+MT_LINEAGE_MARKERS = [
+    {"pos": 663,   "derived": "G", "lineage": "A (ameríndio/asiático)"},
+    {"pos": 1736,  "derived": "G", "lineage": "A (ameríndio/asiático)"},
+    {"pos": 13263, "derived": "G", "lineage": "C (ameríndio)"},
+    {"pos": 5178,  "derived": "A", "lineage": "D (ameríndio/asiático)"},
+    {"pos": 10400, "derived": "T", "lineage": "M (macro asiático/ameríndio)"},
+    {"pos": 10873, "derived": "C", "lineage": "L (macro africano)"},
+    {"pos": 7028,  "derived": "C", "lineage": "H (europeu R0)"},
+    {"pos": 12308, "derived": "G", "lineage": "U/K (europeu)"},
+    {"pos": 13708, "derived": "A", "lineage": "J (europeu)"},
+]
+
+# --- (c) Alelos diagnósticos de ancestralidade -----------------------------
+# rsid -> (gene, alelo/sinal populacional). Corroboram a ancestralidade
+# maioritária; NÃO quantificam percentagens (isso exige análise genome-wide).
+ANCESTRY_DIAGNOSTIC = {
+    "rs16891982": ("SLC45A2", "Alelo G — forte sinal europeu (pele clara)"),
+    "rs12913832": ("HERC2/OCA2", "Alelo G — olhos claros, enriquecido no N. da Europa"),
+    "rs4988235":  ("MCM6/LCT", "Persistência da lactase — marca pastoralista indo-europeia"),
+    "rs671":      ("ALDH2", "Alelo A quase exclusivo do Leste Asiático"),
+    "rs3811801":  ("ADH1B", "Alelo do Leste Asiático (metabolismo do álcool)"),
+    "rs2814778":  ("DARC/Duffy", "Alelo C (Duffy-null) — ancestralidade subsariana"),
+    "rs12075":    ("DARC", "Antigénio Duffy Fya/Fyb (frequência varia por população)"),
+    "rs1426654":  ("SLC24A5", "Alelo A — Europa/Médio Oriente/Sul da Ásia"),
+    "rs3827760":  ("EDAR", "Alelo 370A — Leste Asiático/ameríndio"),
+    "rs174570":   ("FADS", "Adaptação metabólica de dieta (varia por população)"),
+}
+
 
 class GenomicReport:
     """Produz um relatório estruturado a partir do DataFrame já carregado."""
@@ -504,6 +567,98 @@ class GenomicReport:
         results.sort(key=lambda r: order.index(r["category"]) if r["category"] in order else 99)
         return results
 
+    # -- Secção 5a: predição de pigmentação --------------------------------
+    def predict_pigmentation(self):
+        """Predição direcional de olhos/pele/cabelo (subconjunto HIrisPlex-S)."""
+        covered = sum(1 for s in HIRISPLEX_PANEL
+                      if self._genotype.get(s) not in (None, "--", ""))
+
+        eye_g = self._genotype.get("rs12913832")
+        skin_g = self._genotype.get("rs16891982")
+        # Cabelo: MC1R (ruivo) + IRF4 (claro/escuro).
+        mc1r = self._genotype.get("rs1805007")
+        irf4 = self._genotype.get("rs12203592")
+        if mc1r in ("CT", "TC", "TT"):
+            hair = "Tendência para cabelo ruivo/claro (variante MC1R)"
+        elif irf4 in ("TT", "CT", "TC"):
+            hair = "Tendência para cabelo mais claro (loiro/castanho claro)"
+        elif mc1r == "CC" and irf4 == "CC":
+            hair = "Cabelo escuro provável (castanho/preto), sem variante ruiva"
+        else:
+            hair = "Indeterminado (marcadores insuficientes)"
+
+        return {
+            "coverage": covered, "panel_size": len(HIRISPLEX_PANEL),
+            "eye": _lookup_genotype(eye_g, PIGMENT_EYE) if eye_g else "Indeterminado (rs12913832 ausente)",
+            "eye_marker": f"rs12913832={eye_g}" if eye_g else "rs12913832 ausente",
+            "skin": _lookup_genotype(skin_g, PIGMENT_SKIN) if skin_g else "Indeterminado (rs16891982 ausente)",
+            "skin_marker": f"rs16891982={skin_g}" if skin_g else "rs16891982 ausente",
+            "hair": hair,
+        }
+
+    # -- Secção 5b: rastreio da linhagem materna (mtDNA) -------------------
+    def screen_maternal_lineage(self):
+        """
+        Rastreio EXCLUSIONÁRIO da linhagem materna a partir de posições
+        mtDNA definidoras limpas. Não atribui haplogrupo — sinaliza que
+        linhagens estão presentes/ausentes e remete para o mtHap.
+        """
+        mt = self.data[self.data["CHROMOSOME"].astype(str).str.upper() == "MT"]
+        pos_to_base = {}
+        for _, r in mt.iterrows():
+            try:
+                pos_to_base[int(r["POSITION"])] = str(r["RESULT"]).strip().upper()
+            except (ValueError, TypeError):
+                continue
+
+        bases = {"A", "C", "G", "T"}
+        checked, present_signals, absent_signals = [], [], []
+        for m in MT_LINEAGE_MARKERS:
+            base = pos_to_base.get(m["pos"])
+            if base not in bases:  # ignora --, DD, II ou não coberto
+                continue
+            derived = base == m["derived"]
+            entry = {"pos": m["pos"], "base": base, "derived": m["derived"],
+                     "lineage": m["lineage"], "match": derived}
+            checked.append(entry)
+            (present_signals if derived else absent_signals).append(entry)
+
+        # Conclusão conservadora, orientada por exclusão.
+        amerind_asian = [e for e in checked if e["lineage"][0] in ("A", "C", "D", "M")]
+        african = [e for e in checked if e["lineage"].startswith("L")]
+        detected = [e for e in checked if e["match"]]
+
+        if detected:
+            linhas = ", ".join(sorted({e["lineage"] for e in detected}))
+            conclusion = f"Sinal de linhagem detetado ({linhas}) — confirme no mtHap."
+        elif amerind_asian:  # marcadores ameríndios/asiáticos limpos, todos ancestrais
+            afr_note = ("" if african
+                        else " (o marcador africano L não está coberto de forma limpa neste chip)")
+            conclusion = ("Linhagens ameríndias (A/C/D) e do Leste Asiático (M) EXCLUÍDAS nas "
+                          "posições limpas — padrão compatível com linhagem materna euroasiática "
+                          "ocidental (europeia)." + afr_note)
+        else:
+            conclusion = "Cobertura insuficiente para uma conclusão — use o mtHap."
+
+        return {
+            "checked": checked, "present": present_signals, "absent": absent_signals,
+            "conclusion": conclusion,
+        }
+
+    # -- Secção 5c: alelos diagnósticos de ancestralidade ------------------
+    def analyze_ancestry_diagnostics(self):
+        """Lista os alelos diagnósticos de ancestralidade presentes na amostra."""
+        results = []
+        for rsid, (gene, signal) in ANCESTRY_DIAGNOSTIC.items():
+            genotype = self._genotype.get(rsid)
+            present = genotype not in (None, "--", "")
+            results.append({
+                "rsid": rsid, "gene": gene, "signal": signal,
+                "genotype": genotype if present else "—",
+                "present": present,
+            })
+        return results
+
     # -- Composição do relatório -------------------------------------------
     def generate_report(self, output_path=None, fmt="text"):
         """
@@ -574,6 +729,34 @@ class GenomicReport:
             add(f"        ↳ {h['interpretation']}")
             if h.get("note"):
                 add(f"        ⚠ {h['note']}")
+        add("")
+
+        pig = self.predict_pigmentation()
+        lineage = self.screen_maternal_lineage()
+        diag = self.analyze_ancestry_diagnostics()
+        add("[5] ANCESTRALIDADE & FENÓTIPO GLOBAL")
+        add(f"  -- (a) Pigmentação predita [cobertura {pig['coverage']}/{pig['panel_size']} "
+            f"do painel HIrisPlex-S] --")
+        add(f"    Olhos: {pig['eye']}  ({pig['eye_marker']})")
+        add(f"    Pele:  {pig['skin']}  ({pig['skin_marker']})")
+        add(f"    Cabelo: {pig['hair']}")
+        add("    ⚠ Predição direcional (cobertura parcial), não a probabilidade forense validada.")
+        add("")
+        add("  -- (b) Linhagem materna (mtDNA, rastreio exclusionário) --")
+        for e in lineage["checked"]:
+            flag = "presente" if e["match"] else "ausente"
+            add(f"    Pos {e['pos']}: base {e['base']} → sinal {e['lineage']}: {flag}")
+        add(f"    ↳ {lineage['conclusion']}")
+        add("    ⚠ Haplogrupo definitivo requer o mtHap (ficheiro exportado).")
+        add("")
+        add("  -- (c) Alelos diagnósticos de ancestralidade --")
+        for d in diag:
+            if d["present"]:
+                add(f"    [{d['rsid']}] {d['gene']} | Genótipo: {d['genotype']} → {d['signal']}")
+            else:
+                add(f"    [{d['rsid']}] {d['gene']} | ausente do chip ({d['signal']})")
+        add("    ⚠ Corroboram a ancestralidade maioritária; NÃO quantificam percentagens")
+        add("      (componentes minoritários de ~3-4% exigem análise genome-wide com painéis).")
         add("")
 
         add("-" * 68)
@@ -655,6 +838,48 @@ class GenomicReport:
                 nxt = health[i + 1] if i + 1 < len(health) else None
                 if nxt and nxt["category"] != current:
                     add("")
+        add("")
+
+        # -- Secção 5 --
+        pig = self.predict_pigmentation()
+        lineage = self.screen_maternal_lineage()
+        diag = self.analyze_ancestry_diagnostics()
+        add("## 5. Ancestralidade & fenótipo global")
+        add("")
+        add(f"### (a) Pigmentação predita — cobertura {pig['coverage']}/{pig['panel_size']} "
+            f"do painel HIrisPlex-S")
+        add("")
+        add("| Traço | Predição | Marcador |")
+        add("|-------|----------|----------|")
+        add(f"| Olhos | {pig['eye']} | `{pig['eye_marker']}` |")
+        add(f"| Pele | {pig['skin']} | `{pig['skin_marker']}` |")
+        add(f"| Cabelo | {pig['hair']} | rs1805007 / rs12203592 |")
+        add("")
+        add("> ⚠️ Predição **direcional** (cobertura parcial), não a probabilidade forense validada.")
+        add("")
+        add("### (b) Linhagem materna (mtDNA — rastreio exclusionário)")
+        add("")
+        add("| Posição rCRS | Base no chip | Sinal de linhagem | Estado |")
+        add("|:------------:|:------------:|-------------------|:------:|")
+        for e in lineage["checked"]:
+            add(f"| {e['pos']} | `{e['base']}` | {e['lineage']} | "
+                f"{'presente' if e['match'] else 'ausente'} |")
+        add("")
+        add(f"**Conclusão:** {lineage['conclusion']}")
+        add("")
+        add("> ⚠️ O haplogrupo **definitivo** requer o mtHap (o ficheiro `mtdna_mthap.txt` já exportado).")
+        add("")
+        add("### (c) Alelos diagnósticos de ancestralidade")
+        add("")
+        add("| RSID | Gene | Genótipo | Sinal populacional |")
+        add("|------|------|:--------:|--------------------|")
+        for d in diag:
+            geno = f"`{d['genotype']}`" if d["present"] else "_ausente_"
+            add(f"| `{d['rsid']}` | {d['gene']} | {geno} | {d['signal']} |")
+        add("")
+        add("> ⚠️ Corroboram a ancestralidade **maioritária**; **não** quantificam percentagens — "
+            "componentes minoritários (~3-4%) exigem análise genome-wide com painéis de referência "
+            "(1000 Genomes/HGDP) e ferramentas como ADMIXTURE/RFMix.")
         add("")
 
         add("---")
