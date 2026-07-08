@@ -18,6 +18,21 @@ MITO_CHROMOSOME_LABELS = {"MT", "M", "26", "CHRM", "MITO"}
 REQUIRED_COLUMNS = ("RSID", "CHROMOSOME", "POSITION", "RESULT")
 
 
+def _split_alleles(result):
+    """
+    Converte um genótipo (ex.: "GG", "CA", "G", "II", "--") no par de
+    alelos do formato AncestryDNA. Chamadas em falta -> ("0", "0").
+    """
+    g = str(result).strip().upper()
+    if g in ("--", "", "NN", "00", "-"):
+        return ("0", "0")
+    if len(g) == 1:               # haploide (MT/Y) -> alelo duplicado
+        return (g, g)
+    a1 = g[0] if g[0] != "-" else "0"
+    a2 = g[1] if g[1] != "-" else "0"
+    return (a1, a2)
+
+
 class GenomicETL:
     """Pipeline de extração e conversão de dados genómicos brutos."""
 
@@ -141,6 +156,46 @@ class GenomicETL:
                 handle.write(
                     f"{row['RSID']}\t{row['CHROMOSOME']}\t{row['POSITION']}\t{row['RESULT']}\n"
                 )
+
+        print(f"    Exportação concluída: {len(export_df):,} variantes (genoma completo).")
+        print("    Carregue este ficheiro (ou a versão .gz) em https://www.gedmatch.com/")
+        return output_path
+
+    def export_ancestrydna_format(self, output_path):
+        """
+        Exporta o genoma completo no formato bruto do AncestryDNA (Build 37):
+        5 colunas separadas por tabulações, com os dois alelos em colunas
+        distintas e cromossomas em código numérico (X=23, Y=24, MT=26).
+
+            rsid    chromosome    position    allele1    allele2
+        """
+        if self.data is None:
+            raise RuntimeError("Os dados ainda não foram carregados. Chame load_data() primeiro.")
+
+        print(f"[+] A exportar formato AncestryDNA para: {output_path}")
+
+        export_df = self.data[list(REQUIRED_COLUMNS)].copy()
+
+        # Código numérico de cromossoma usado pelo AncestryDNA.
+        chrom_map = {str(i): str(i) for i in range(1, 23)}
+        chrom_map.update({"X": "23", "Y": "24", "MT": "26", "M": "26"})
+        chrom_sort = {str(i): i for i in range(1, 23)}
+        chrom_sort.update({"X": 23, "Y": 24, "MT": 26, "M": 26})
+
+        export_df["_C"] = export_df["CHROMOSOME"].str.upper().map(chrom_sort).fillna(99)
+        export_df["_P"] = pd.to_numeric(export_df["POSITION"], errors="coerce")
+        export_df = export_df.sort_values(["_C", "_P"], kind="stable")
+
+        with open(output_path, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write("#AncestryDNA raw data download\n")
+            handle.write("#Dados de genótipo bruto convertidos para o formato AncestryDNA.\n")
+            handle.write("#Assembly: GRCh37/hg19 (Build 37).\n")
+            # Cabeçalho (linha NÃO comentada) que o GEDmatch usa para detetar o formato.
+            handle.write("rsid\tchromosome\tposition\tallele1\tallele2\n")
+            for _, row in export_df.iterrows():
+                chrom = chrom_map.get(str(row["CHROMOSOME"]).upper(), str(row["CHROMOSOME"]))
+                a1, a2 = _split_alleles(row["RESULT"])
+                handle.write(f"{row['RSID']}\t{chrom}\t{row['POSITION']}\t{a1}\t{a2}\n")
 
         print(f"    Exportação concluída: {len(export_df):,} variantes (genoma completo).")
         print("    Carregue este ficheiro (ou a versão .gz) em https://www.gedmatch.com/")

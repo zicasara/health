@@ -21,6 +21,11 @@ def main():
         help="(Opcional) Caminho para exportar o genoma completo no formato "
              "23andMe/GEDmatch (Build 37, tab-separated).",
     )
+    parser.add_argument(
+        "-a", "--ancestrydna",
+        help="(Opcional) Caminho para exportar o genoma completo no formato "
+             "AncestryDNA (Build 37, 5 colunas, alelos separados).",
+    )
 
     args = parser.parse_args()
 
@@ -33,6 +38,10 @@ def main():
     # Exportação GEDmatch opcional (genoma completo)
     if args.gedmatch:
         etl.export_gedmatch_format(output_path=args.gedmatch)
+
+    # Exportação AncestryDNA opcional (genoma completo)
+    if args.ancestrydna:
+        etl.export_ancestrydna_format(output_path=args.ancestrydna)
 
     # Relatório estruturado opcional
     if args.report:
