@@ -484,5 +484,95 @@
     },
     "estrategia": "Alelo *2 reduz ativação de clopidogrel (sem *2 = normal).",
     "evidencia": "alta"
+  },
+  "rs3745274": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP2B6 (*6)",
+    "funcao": "Metaboliza bupropiona, cetamina, metadona, efavirenz",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GT": {
+        "valor": 1
+      },
+      "TT": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Portador *6 reduz metabolismo (sem *6 = normal).",
+    "evidencia": "media"
+  },
+  "rs35599367": {
+    "categoria": "Farmacogenetica",
+    "gene": "CYP3A4 (*22)",
+    "funcao": "Metaboliza estatinas, fentanil, alguns antidepressivos",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GA": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Portador *22 reduz atividade (sem *22 = normal).",
+    "evidencia": "media"
+  },
+  "rs1799971": {
+    "categoria": "Farmacogenetica",
+    "gene": "OPRM1 (A118G)",
+    "funcao": "Recetor µ-opioide: requisito de dose de opioides",
+    "pesos": {
+      "AA": {
+        "valor": 0
+      },
+      "AG": {
+        "valor": 1
+      },
+      "GG": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Alelo G pode exigir doses mais altas de opioides para analgesia.",
+    "evidencia": "media"
+  },
+  "rs13277113": {
+    "categoria": "Susceptibilidade",
+    "gene": "BLK (autoimune)",
+    "funcao": "Locus de risco partilhado (lúpus/AR)",
+    "pesos": {
+      "GG": {
+        "valor": 0
+      },
+      "GA": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 2
+      }
+    },
+    "estrategia": "Um alelo de risco autoimune (BLK): NÃO diagnóstico; risco poligénico.",
+    "evidencia": "baixa"
+  },
+  "rs1495741": {
+    "categoria": "Susceptibilidade",
+    "gene": "NAT2 (tag acetilação)",
+    "funcao": "Acetilação de fármacos (lúpus induzido)",
+    "pesos": {
+      "GG": {
+        "valor": 2
+      },
+      "GA": {
+        "valor": 1
+      },
+      "AA": {
+        "valor": 0
+      }
+    },
+    "estrategia": "Estado de acetilador incompleto (NAT2*5 não coberto): não é possível classificar de forma fiável.",
+    "evidencia": "media"
   }
 }

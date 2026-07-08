@@ -515,6 +515,7 @@ FUNCTIONAL_CATEGORIES = {
     "Nutrigenetica": "Metabolismo de nutrientes (folato/B12, vitaminas D/A/B6, ómega-3, lactose, cafeína).",
     "Inflamatorio": "Tónus inflamatório e defesa antioxidante (citocinas, detoxificação, oxidação).",
     "Farmacogenetica": "Resposta a fármacos (metabolização e sensibilidade).",
+    "Susceptibilidade": "Alelos de risco partilhados (autoimune/lúpus) e acetilação — NÃO diagnóstico.",
 }
 NIVEL_LABEL = {1: "Moderado", 2: "Alto"}
 
