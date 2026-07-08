@@ -129,6 +129,265 @@ TRAIT_DATABASE = {
     },
 }
 
+# --- Predisposições de saúde (RASTREIO, não diagnóstico) ------------------
+# Cada entrada: categoria, gene, condição, mapa genótipo->interpretação,
+# nível de evidência e nota. Os mapas seguem a orientação de alelos do
+# dbSNP/23andMe; genótipos não catalogados caem numa mensagem neutra que
+# apenas mostra o valor detetado (nunca inventa um risco).
+#
+# AVISO CLÍNICO: nenhuma destas leituras substitui teste clínico ou
+# aconselhamento genético. Um chip cobre posições pré-definidas — a
+# ausência de uma variante NÃO garante a sua ausência no genoma.
+HEALTH_DATABASE = {
+    # -- Predisposição a doença (multifatorial) --
+    "rs7903146": {
+        "category": "Predisposição a doença", "gene": "TCF7L2",
+        "condition": "Diabetes tipo 2", "evidence": "forte",
+        "genotypes": {
+            "CC": "Sem alelo de risco — risco genético mais baixo neste locus",
+            "CT": "Um alelo de risco — risco moderadamente aumentado",
+            "TC": "Um alelo de risco — risco moderadamente aumentado",
+            "TT": "Dois alelos de risco — risco aumentado",
+        },
+        "note": "Risco poligénico e fortemente modulado por estilo de vida.",
+    },
+    "rs1061170": {
+        "category": "Predisposição a doença", "gene": "CFH (Y402H)",
+        "condition": "Degenerescência macular da idade (DMI)", "evidence": "forte",
+        "genotypes": {
+            "TT": "Sem alelo de risco",
+            "CT": "Um alelo de risco de DMI",
+            "TC": "Um alelo de risco de DMI",
+            "CC": "Dois alelos de risco — risco aumentado de DMI",
+        },
+        "note": "Risco reduzível: não fumar, proteção UV e dieta/suplementos AREDS.",
+    },
+    "rs10490924": {
+        "category": "Predisposição a doença", "gene": "ARMS2",
+        "condition": "Degenerescência macular da idade (DMI)", "evidence": "forte",
+        "genotypes": {
+            "GG": "Sem alelo de risco ARMS2",
+            "GT": "Um alelo de risco", "TG": "Um alelo de risco",
+            "TT": "Dois alelos de risco",
+        },
+    },
+    "rs2187668": {
+        "category": "Predisposição a doença", "gene": "HLA-DQ2.5",
+        "condition": "Doença celíaca (suscetibilidade)", "evidence": "forte",
+        "genotypes": {
+            "CC": "Tag DQ2.5 ausente — risco genético baixo (DQ8 não avaliado por este marcador)",
+            "CT": "Portador do haplótipo DQ2.5",
+            "TC": "Portador do haplótipo DQ2.5",
+            "TT": "Homozigoto DQ2.5",
+        },
+        "note": "A maioria dos portadores de DQ2.5 NUNCA desenvolve a doença.",
+    },
+    "rs34637584": {
+        "category": "Predisposição a doença", "gene": "LRRK2 (G2019S)",
+        "condition": "Doença de Parkinson", "evidence": "forte (variante específica)",
+        "genotypes": {
+            "GG": "Sem a variante G2019S",
+            "GA": "Portador de G2019S — risco aumentado",
+            "AG": "Portador de G2019S — risco aumentado",
+            "AA": "Homozigoto G2019S",
+        },
+        "note": "Cobre apenas a variante G2019S, não todo o risco de Parkinson.",
+    },
+
+    # -- Trombofilia / estado de portador --
+    "rs6025": {
+        "category": "Trombofilia / portador", "gene": "F5 (Fator V Leiden)",
+        "condition": "Trombofilia hereditária", "evidence": "forte",
+        "genotypes": {
+            "CC": "Sem a variante Fator V Leiden — risco não aumentado por este locus",
+            "CT": "Portador de Fator V Leiden — risco de trombose aumentado",
+            "TC": "Portador de Fator V Leiden — risco de trombose aumentado",
+            "TT": "Homozigoto — risco de trombose elevado",
+        },
+    },
+    "rs1799963": {
+        "category": "Trombofilia / portador", "gene": "F2 (protrombina G20210A)",
+        "condition": "Trombofilia hereditária", "evidence": "forte",
+        "genotypes": {
+            "GG": "Sem a variante G20210A",
+            "GA": "Portador de G20210A — risco de trombose aumentado",
+            "AG": "Portador de G20210A — risco de trombose aumentado",
+            "AA": "Homozigoto",
+        },
+    },
+    "rs1800562": {
+        "category": "Trombofilia / portador", "gene": "HFE (C282Y)",
+        "condition": "Hemocromatose hereditária", "evidence": "forte",
+        "genotypes": {
+            "GG": "Sem a variante C282Y",
+            "GA": "Portador de C282Y", "AG": "Portador de C282Y",
+            "AA": "Homozigoto C282Y — principal genótipo de risco de hemocromatose",
+        },
+        "note": "O risco clínico depende da combinação C282Y/H63D (ver abaixo).",
+    },
+    "rs1799945": {
+        "category": "Trombofilia / portador", "gene": "HFE (H63D)",
+        "condition": "Hemocromatose hereditária", "evidence": "moderada",
+        "genotypes": {
+            "CC": "Sem a variante H63D",
+            "CG": "Portador de H63D (baixa penetrância)",
+            "GC": "Portador de H63D (baixa penetrância)",
+            "GG": "Homozigoto H63D",
+        },
+    },
+    "rs28929474": {
+        "category": "Trombofilia / portador", "gene": "SERPINA1 (PiZ)",
+        "condition": "Deficiência de alfa-1-antitripsina", "evidence": "forte",
+        "genotypes": {
+            "CC": "Sem o alelo Z",
+            "CT": "Portador PiZ", "TC": "Portador PiZ",
+            "TT": "ZZ — deficiência de alfa-1-antitripsina",
+        },
+    },
+    "rs17580": {
+        "category": "Trombofilia / portador", "gene": "SERPINA1 (PiS)",
+        "condition": "Deficiência de alfa-1-antitripsina", "evidence": "forte",
+        "genotypes": {
+            "TT": "Sem o alelo S",
+            "TA": "Portador PiS", "AT": "Portador PiS",
+            "AA": "SS",
+        },
+    },
+    "rs1801133": {
+        "category": "Trombofilia / portador", "gene": "MTHFR (C677T)",
+        "condition": "Metabolismo do folato", "evidence": "fraca",
+        "genotypes": {
+            "GG": "Sem a variante C677T — atividade normal",
+            "GA": "Heterozigoto C677T — atividade ligeiramente reduzida (comum)",
+            "AG": "Heterozigoto C677T — atividade ligeiramente reduzida (comum)",
+            "AA": "Homozigoto C677T — atividade reduzida (~30%)",
+        },
+        "note": "Sociedades médicas (ex.: ACMG) NÃO recomendam o teste de MTHFR "
+                "para trombofilia; achado geralmente sem significado clínico.",
+    },
+    "rs1801131": {
+        "category": "Trombofilia / portador", "gene": "MTHFR (A1298C)",
+        "condition": "Metabolismo do folato", "evidence": "fraca",
+        "genotypes": {
+            "TT": "Sem a variante A1298C",
+            "TG": "Heterozigoto A1298C", "GT": "Heterozigoto A1298C",
+            "GG": "Homozigoto A1298C",
+        },
+    },
+    "rs887829": {
+        "category": "Trombofilia / portador", "gene": "UGT1A1",
+        "condition": "Síndrome de Gilbert (benigna)", "evidence": "forte",
+        "genotypes": {
+            "CC": "Sem a variante",
+            "CT": "Portador — síndrome de Gilbert improvável (requer homozigotia)",
+            "TC": "Portador — síndrome de Gilbert improvável (requer homozigotia)",
+            "TT": "Homozigoto — compatível com síndrome de Gilbert (benigna)",
+        },
+    },
+
+    # -- Farmacogenética --
+    "rs4149056": {
+        "category": "Farmacogenética", "gene": "SLCO1B1",
+        "condition": "Miopatia induzida por estatinas", "evidence": "forte",
+        "genotypes": {
+            "TT": "Função normal do transportador",
+            "TC": "Função reduzida — risco intermédio de miopatia (esp. sinvastatina)",
+            "CT": "Função reduzida — risco intermédio de miopatia (esp. sinvastatina)",
+            "CC": "Função baixa — risco elevado de miopatia por estatinas",
+        },
+    },
+    "rs9923231": {
+        "category": "Farmacogenética", "gene": "VKORC1",
+        "condition": "Sensibilidade à varfarina", "evidence": "forte",
+        "genotypes": {
+            "CC": "Sensibilidade normal à varfarina",
+            "CT": "Sensibilidade intermédia — possível dose mais baixa",
+            "TC": "Sensibilidade intermédia — possível dose mais baixa",
+            "TT": "Alta sensibilidade — dose baixa",
+        },
+    },
+    "rs1799853": {
+        "category": "Farmacogenética", "gene": "CYP2C9*2",
+        "condition": "Metabolismo de varfarina/AINEs", "evidence": "forte",
+        "genotypes": {
+            "CC": "Sem alelo *2 — metabolismo normal",
+            "CT": "Portador *2 — metabolismo reduzido", "TC": "Portador *2 — metabolismo reduzido",
+            "TT": "*2/*2 — metabolismo lento",
+        },
+    },
+    "rs1057910": {
+        "category": "Farmacogenética", "gene": "CYP2C9*3",
+        "condition": "Metabolismo de varfarina/AINEs", "evidence": "forte",
+        "genotypes": {
+            "AA": "Sem alelo *3 — metabolismo normal",
+            "AC": "Portador *3 — metabolismo reduzido", "CA": "Portador *3 — metabolismo reduzido",
+            "CC": "*3/*3 — metabolismo lento",
+        },
+    },
+    "rs762551": {
+        "category": "Farmacogenética", "gene": "CYP1A2",
+        "condition": "Metabolismo da cafeína", "evidence": "moderada",
+        "genotypes": {
+            "AA": "Metabolizador rápido de cafeína",
+            "AC": "Metabolizador intermédio", "CA": "Metabolizador intermédio",
+            "CC": "Metabolizador lento",
+        },
+    },
+
+    # -- Estilo de vida --
+    "rs16969968": {
+        "category": "Estilo de vida", "gene": "CHRNA5",
+        "condition": "Dependência de nicotina", "evidence": "forte",
+        "genotypes": {
+            "GG": "Sem alelo de risco",
+            "GA": "Um alelo — maior dependência de nicotina se fumar",
+            "AG": "Um alelo — maior dependência de nicotina se fumar",
+            "AA": "Dois alelos — dependência acentuada e maior risco de cancro do pulmão se fumar",
+        },
+        "note": "Relevante apenas em contexto de tabagismo.",
+    },
+}
+
+
+def _lookup_genotype(genotype, mapping):
+    """Procura o genótipo no mapa, tolerando a ordem dos alelos (CT == TC)."""
+    if genotype in mapping:
+        return mapping[genotype]
+    if len(genotype) == 2 and genotype[::-1] in mapping:
+        return mapping[genotype[::-1]]
+    return None
+
+
+def resolve_apoe(g429358, g7412):
+    """
+    Determina o genótipo APOE (ε2/ε3/ε4) a partir de rs429358 e rs7412.
+
+    Cada haplótipo é definido pelo par de bases nas duas posições:
+        ε2 = (T, T) | ε3 = (T, C) | ε4 = (C, C)
+    Requer ambos os SNPs com chamada de 2 alelos.
+    """
+    if not g429358 or not g7412 or len(g429358) != 2 or len(g7412) != 2:
+        return None
+    haplo = {("T", "T"): "ε2", ("T", "C"): "ε3", ("C", "C"): "ε4"}
+    # Empareja as duas ordenações possíveis dos alelos e escolhe a que
+    # produz dois haplótipos válidos.
+    for a1, a2 in ((g429358[0], g429358[1]), (g429358[1], g429358[0])):
+        alleles = (haplo.get((a1, g7412[0])), haplo.get((a2, g7412[1])))
+        if all(alleles):
+            e1, e2 = sorted(alleles)  # ordem canónica (ε2<ε3<ε4)
+            return f"{e1}/{e2}"
+    return None
+
+# Interpretação e risco por genótipo APOE (foco em Alzheimer de início tardio).
+APOE_INTERPRETATION = {
+    "ε2/ε2": "Risco reduzido de Alzheimer; possível efeito na lipidémia",
+    "ε2/ε3": "Risco de Alzheimer ligeiramente reduzido",
+    "ε2/ε4": "Efeitos opostos combinados — risco próximo do médio",
+    "ε3/ε3": "Genótipo mais comum — risco de referência (médio)",
+    "ε3/ε4": "Uma cópia ε4 — risco de Alzheimer aumentado (~2-3×) e LDL mais alto",
+    "ε4/ε4": "Duas cópias ε4 — risco de Alzheimer substancialmente aumentado",
+}
+
 
 class GenomicReport:
     """Produz um relatório estruturado a partir do DataFrame já carregado."""
@@ -203,6 +462,48 @@ class GenomicReport:
             })
         return results
 
+    # -- Secção 4: predisposições de saúde ---------------------------------
+    def analyze_health(self):
+        """
+        Avalia marcadores de predisposição de saúde presentes na amostra.
+
+        RASTREIO, não diagnóstico. Devolve uma lista de dicionários,
+        incluindo o resultado composto de APOE quando disponível.
+        """
+        results = []
+
+        # APOE precisa de dois SNPs combinados.
+        apoe = resolve_apoe(self._genotype.get("rs429358"), self._genotype.get("rs7412"))
+        if apoe:
+            results.append({
+                "category": "Predisposição a doença", "gene": "APOE",
+                "condition": "Alzheimer de início tardio / lipidémia",
+                "genotype": apoe, "evidence": "forte",
+                "interpretation": APOE_INTERPRETATION.get(apoe, "Genótipo APOE detetado"),
+                "note": "Fator de risco, NÃO determinístico; a maioria com ε4 não "
+                        "desenvolve Alzheimer. Considere aconselhamento genético.",
+            })
+
+        for rsid, info in HEALTH_DATABASE.items():
+            genotype = self._genotype.get(rsid)
+            if not genotype or genotype in {"--", ""}:
+                continue
+            interpretation = _lookup_genotype(genotype, info["genotypes"])
+            if interpretation is None:
+                interpretation = f"Genótipo {genotype} não catalogado — leitura manual necessária"
+            results.append({
+                "category": info["category"], "gene": info["gene"],
+                "condition": info["condition"], "genotype": genotype,
+                "evidence": info.get("evidence", ""),
+                "interpretation": interpretation, "note": info.get("note"),
+            })
+
+        # Ordena por categoria (ordem estável definida) para leitura coerente.
+        order = ["Predisposição a doença", "Trombofilia / portador",
+                 "Farmacogenética", "Estilo de vida"]
+        results.sort(key=lambda r: order.index(r["category"]) if r["category"] in order else 99)
+        return results
+
     # -- Composição do relatório -------------------------------------------
     def generate_report(self, output_path=None, fmt="text"):
         """
@@ -259,10 +560,28 @@ class GenomicReport:
                 add(f"        ⚠ {t['note']}")
         add("")
 
+        health = self.analyze_health()
+        add("[4] PREDISPOSIÇÕES DE SAÚDE (rastreio, não diagnóstico)")
+        if not health:
+            add("    Nenhum marcador de saúde catalogado presente na amostra.")
+        current = None
+        for h in health:
+            if h["category"] != current:
+                current = h["category"]
+                add(f"  -- {current} --")
+            evid = f" [evidência: {h['evidence']}]" if h.get("evidence") else ""
+            add(f"    [{h['gene']}] {h['condition']} | Genótipo: {h['genotype']}{evid}")
+            add(f"        ↳ {h['interpretation']}")
+            if h.get("note"):
+                add(f"        ⚠ {h['note']}")
+        add("")
+
         add("-" * 68)
-        add("AVISO: Relatório de rastreio sobre dados de genotipagem por chip")
-        add("(cobertura parcial do genoma). Interpretações indicativas, não")
-        add("diagnósticas. Confirme qualquer achado relevante clinicamente.")
+        add("AVISO: Relatório de RASTREIO sobre dados de genotipagem por chip")
+        add("(cobertura parcial do genoma). Interpretações indicativas, NÃO")
+        add("diagnósticas — a ausência de uma variante não garante a sua")
+        add("ausência no genoma. Não tome decisões médicas com base neste")
+        add("relatório; procure confirmação clínica e aconselhamento genético.")
         add("=" * 68)
 
         return "\n".join(lines)
@@ -313,10 +632,37 @@ class GenomicReport:
                 add(f"| `{t['rsid']}` | {t['gene']} | {t['trait']} | `{t['genotype']}` | {interp} |")
         add("")
 
+        health = self.analyze_health()
+        add("## 4. Predisposições de saúde (rastreio, não diagnóstico)")
+        add("")
+        if not health:
+            add("_Nenhum marcador de saúde catalogado presente na amostra._")
+        else:
+            current = None
+            for i, h in enumerate(health):
+                if h["category"] != current:
+                    current = h["category"]
+                    add(f"### {current}")
+                    add("")
+                    add("| RSID/Gene | Condição | Genótipo | Evidência | Interpretação |")
+                    add("|-----------|----------|:--------:|:---------:|---------------|")
+                interp = h["interpretation"]
+                if h.get("note"):
+                    interp += f" ⚠️ _{h['note']}_"
+                add(f"| {h['gene']} | {h['condition']} | `{h['genotype']}` "
+                    f"| {h.get('evidence','')} | {interp} |")
+                # Linha em branco antes de iniciar uma nova categoria.
+                nxt = health[i + 1] if i + 1 < len(health) else None
+                if nxt and nxt["category"] != current:
+                    add("")
+        add("")
+
         add("---")
         add("")
-        add("> **Aviso:** Relatório de rastreio sobre dados de genotipagem por chip "
-            "(cobertura parcial do genoma). Interpretações indicativas, não "
-            "diagnósticas. Confirme qualquer achado relevante clinicamente.")
+        add("> **Aviso:** Relatório de **rastreio** sobre dados de genotipagem por chip "
+            "(cobertura parcial do genoma). As interpretações são indicativas e **não "
+            "diagnósticas** — a ausência de uma variante não garante a sua ausência no "
+            "genoma. Não tome decisões médicas com base neste relatório; para qualquer "
+            "achado relevante procure confirmação clínica e aconselhamento genético.")
 
         return "\n".join(lines)
