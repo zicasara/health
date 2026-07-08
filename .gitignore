@@ -1,0 +1,4 @@
+# Artefactos gerados pelo pipeline
+data/mtdna_mthap.txt
+__pycache__/
+*.pyc
