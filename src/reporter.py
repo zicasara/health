@@ -510,6 +510,31 @@ def load_neuro_map(path=None):
         return DEFAULT_NEURO_MAP
 
 
+# Categorias do perfil funcional clínico (Secção 7) e sua ordem/descrição.
+FUNCTIONAL_CATEGORIES = {
+    "Nutrigenetica": "Metabolismo de nutrientes (folato/B12, vitaminas D/A/B6, ómega-3, lactose, cafeína).",
+    "Inflamatorio": "Tónus inflamatório e defesa antioxidante (citocinas, detoxificação, oxidação).",
+    "Farmacogenetica": "Resposta a fármacos (metabolização e sensibilidade).",
+}
+NIVEL_LABEL = {1: "Moderado", 2: "Alto"}
+
+
+def load_functional_map(path=None):
+    """
+    Carrega o mapa funcional (Nutrigenética/Inflamatório/Farmacogenética) de
+    functional_map.json na raiz do projeto. Devolve {} se não existir.
+    """
+    import json
+    import os
+    candidate = path or os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "functional_map.json")
+    try:
+        with open(candidate, "r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
 def _match_weighted_genotype(genotype, weight_map):
     """
     Faz corresponder o genótipo às chaves do mapa de pesos, tolerando a
@@ -829,6 +854,47 @@ class GenomicReport:
         return {"axes": axes, "strategies": list(dict.fromkeys(strategies)),
                 "notes": notes, "sintese": sintese}
 
+    # -- Secção 7: perfil funcional clínico (nutri/inflam/farmaco) ---------
+    def perfil_funcional(self, functional_map=None):
+        """
+        Perfil funcional por categoria (Nutrigenética, Inflamatório,
+        Farmacogenética). Um genótipo com valor >= 1 dispara um "alerta"
+        acionável. Correção de orientação de cadeia aplicada.
+
+        Devolve {'categorias': {cat: [alertas]}, 'avaliados': int, 'notes'}.
+        """
+        if functional_map is None:
+            functional_map = load_functional_map()
+
+        cats = {c: [] for c in FUNCTIONAL_CATEGORIES}
+        avaliados = 0
+        for rsid, info in functional_map.items():
+            categoria = info.get("categoria")
+            pesos = info.get("pesos", {})
+            genotype = self._genotype.get(rsid)
+            if not genotype or genotype in ("--", ""):
+                continue
+            key, flipped = _match_weighted_genotype(genotype, pesos)
+            if key is None:
+                continue
+            avaliados += 1
+            valor = pesos[key].get("valor", 0)
+            if valor >= 1:  # gatilho de alerta (lógica do utilizador)
+                geno_disp = f"{genotype} (=strand {key})" if flipped else genotype
+                cats.setdefault(categoria, []).append({
+                    "rsid": rsid, "gene": info.get("gene", "?"),
+                    "funcao": info.get("funcao", ""), "genotype": geno_disp,
+                    "nivel": NIVEL_LABEL.get(valor, str(valor)),
+                    "alerta": info.get("estrategia", ""),
+                    "evidencia": info.get("evidencia", "?"),
+                })
+        # Ordena alertas por nível (Alto primeiro) dentro de cada categoria.
+        for c in cats.values():
+            c.sort(key=lambda a: 0 if a["nivel"] == "Alto" else 1)
+        notes = ["MTHFR corrigido: o alelo T (reduz a enzima) é o que exige mais folato — "
+                 "orientação oposta à do rascunho inicial."]
+        return {"categorias": cats, "avaliados": avaliados, "notes": notes}
+
     # -- Composição do relatório -------------------------------------------
     def generate_report(self, output_path=None, fmt="text"):
         """
@@ -956,6 +1022,24 @@ class GenomicReport:
             add("      Nenhuma área sensível sinalizada — perfil equilibrado nos eixos avaliados.")
         add("    ⚠ Leitura ILUSTRATIVA por sistema de neurotransmissores. As associações")
         add("      gene→comportamento têm efeito pequeno e replicação fraca. NÃO é avaliação psicológica.")
+        add("")
+
+        func = self.perfil_funcional()
+        add("[7] PERFIL FUNCIONAL CLÍNICO (rastreio — nutri/inflamatório/farmaco)")
+        add(f"    Marcadores avaliados: {func['avaliados']}. Alertas = genótipos acionáveis.")
+        for n in func["notes"]:
+            add(f"    Nota: {n}")
+        for cat, desc in FUNCTIONAL_CATEGORIES.items():
+            alertas = func["categorias"].get(cat, [])
+            add(f"  >>> {cat.upper()} — {desc}")
+            if not alertas:
+                add("      (sem alertas — genótipos neutros/ótimos nos marcadores cobertos)")
+            for a in alertas:
+                add(f"      [{a['nivel']}] {a['gene']} ({a['genotype']}) — {a['funcao']} | evid: {a['evidencia']}")
+                add(f"         ↳ {a['alerta']}")
+            add("")
+        add("    ⚠ Rastreio exploratório, NÃO diagnóstico nem prescrição. Alterações de dieta,")
+        add("      suplementos ou fármacos devem ser decididas com um profissional de saúde.")
         add("")
 
         add("-" * 68)
@@ -1115,6 +1199,34 @@ class GenomicReport:
         add("> ⚠️ Leitura **ilustrativa** por sistema de neurotransmissores; APOE como genótipo composto (ε). "
             "As associações gene→comportamento têm efeito pequeno e replicação fraca — **não** é uma "
             "avaliação psicológica válida nem aconselhamento terapêutico.")
+        add("")
+
+        # -- Secção 7 --
+        func = self.perfil_funcional()
+        add("## 7. Perfil funcional clínico (rastreio — nutri/inflamatório/farmaco)")
+        add("")
+        add(f"Marcadores avaliados: **{func['avaliados']}**. Um alerta = genótipo acionável (nível Moderado/Alto).")
+        add("")
+        for n in func["notes"]:
+            add(f"> ℹ️ {n}")
+        if func["notes"]:
+            add("")
+        for cat, desc in FUNCTIONAL_CATEGORIES.items():
+            alertas = func["categorias"].get(cat, [])
+            add(f"### {cat} — {desc}")
+            add("")
+            if not alertas:
+                add("_Sem alertas — genótipos neutros/ótimos nos marcadores cobertos._")
+                add("")
+                continue
+            add("| Nível | Gene | Genótipo | Função | Evid. | Recomendação |")
+            add("|:-----:|------|:--------:|--------|:-----:|--------------|")
+            for a in alertas:
+                add(f"| {a['nivel']} | {a['gene']} | `{a['genotype']}` | {a['funcao']} "
+                    f"| {a['evidencia']} | {a['alerta']} |")
+            add("")
+        add("> ⚠️ Rastreio **exploratório, não diagnóstico nem prescrição**. Alterações de dieta, "
+            "suplementos ou fármacos devem ser decididas com um profissional de saúde.")
         add("")
 
         add("---")
