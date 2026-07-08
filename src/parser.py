@@ -110,16 +110,23 @@ class GenomicETL:
         )
         return output_path
 
-    def generate_report(self, output_path=None):
+    def generate_report(self, output_path=None, fmt=None):
         """
         Gera um relatório estruturado (sexo inferido, ancestralidade e
         traços fenotípicos) a partir dos dados carregados.
+
+        fmt: "text" ou "markdown". Se None, é inferido pela extensão do
+        ficheiro de saída (.md/.markdown -> markdown), caindo em "text".
         """
         if self.data is None:
             raise RuntimeError("Os dados ainda não foram carregados. Chame load_data() primeiro.")
 
+        if fmt is None:
+            path = str(output_path or "").lower()
+            fmt = "markdown" if path.endswith((".md", ".markdown")) else "text"
+
         print("[+] A gerar relatório genómico estruturado...")
-        report = GenomicReport(self.data).generate_report(output_path=output_path)
+        report = GenomicReport(self.data).generate_report(output_path=output_path, fmt=fmt)
         if output_path:
-            print(f"    Relatório gravado em: {output_path}")
+            print(f"    Relatório ({fmt}) gravado em: {output_path}")
         return report

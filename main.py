@@ -11,6 +11,11 @@ def main():
         help="(Opcional) Caminho para gravar o relatório estruturado "
              "(sexo inferido, ancestralidade e traços). Use '-' para imprimir no ecrã.",
     )
+    parser.add_argument(
+        "--report-format", choices=["text", "markdown"], default=None,
+        help="Formato do relatório. Se omitido, é inferido pela extensão "
+             "(.md -> markdown), caindo em 'text'.",
+    )
 
     args = parser.parse_args()
 
@@ -23,9 +28,9 @@ def main():
     # Relatório estruturado opcional
     if args.report:
         if args.report == "-":
-            print("\n" + etl.generate_report())
+            print("\n" + etl.generate_report(fmt=args.report_format or "text"))
         else:
-            etl.generate_report(output_path=args.report)
+            etl.generate_report(output_path=args.report, fmt=args.report_format)
 
 
 if __name__ == "__main__":

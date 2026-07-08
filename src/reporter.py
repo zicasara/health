@@ -204,8 +204,24 @@ class GenomicReport:
         return results
 
     # -- Composição do relatório -------------------------------------------
-    def generate_report(self, output_path=None):
-        """Compõe o relatório em texto e, opcionalmente, grava-o em ficheiro."""
+    def generate_report(self, output_path=None, fmt="text"):
+        """
+        Compõe o relatório e, opcionalmente, grava-o em ficheiro.
+
+        fmt: "text" (predefinição) ou "markdown"/"md".
+        """
+        if fmt in ("markdown", "md"):
+            report = self._render_markdown()
+        else:
+            report = self._render_text()
+
+        if output_path:
+            with open(output_path, "w", encoding="utf-8", newline="\n") as handle:
+                handle.write(report + "\n")
+        return report
+
+    def _render_text(self):
+        """Compõe o relatório em texto simples."""
         sex = self.infer_biological_sex()
         ancestry = self.analyze_ancestry()
         traits = self.analyze_traits()
@@ -249,8 +265,58 @@ class GenomicReport:
         add("diagnósticas. Confirme qualquer achado relevante clinicamente.")
         add("=" * 68)
 
-        report = "\n".join(lines)
-        if output_path:
-            with open(output_path, "w", encoding="utf-8", newline="\n") as handle:
-                handle.write(report + "\n")
-        return report
+        return "\n".join(lines)
+
+    def _render_markdown(self):
+        """Compõe o relatório em Markdown."""
+        sex = self.infer_biological_sex()
+        ancestry = self.analyze_ancestry()
+        traits = self.analyze_traits()
+
+        lines = []
+        add = lines.append
+        add("# Relatório Genómico Estruturado")
+        add("")
+        add(f"**Variantes analisadas:** {len(self.data):,}")
+        add("")
+
+        add("## 1. Sexo biológico inferido")
+        add("")
+        add(f"- **Resultado:** {sex['inferred']}")
+        add(f"- **Cromossoma Y:** {sex['y_called']}/{sex['y_total']} sondas com chamada "
+            f"({sex['y_call_rate']*100:.1f}%)")
+        add(f"- **Heterozigotia no X:** {sex['x_het_rate']*100:.1f}%")
+        add("")
+
+        add("## 2. Ancestralidade (marcadores AIMs presentes)")
+        add("")
+        if not ancestry:
+            add("_Nenhum marcador AIM catalogado presente na amostra._")
+        else:
+            add("| RSID | Gene | Genótipo | Sinal populacional |")
+            add("|------|------|:--------:|--------------------|")
+            for a in ancestry:
+                add(f"| `{a['rsid']}` | {a['gene']} | `{a['genotype']}` | {a['signal']} |")
+        add("")
+
+        add("## 3. Traços fenotípicos")
+        add("")
+        if not traits:
+            add("_Nenhum SNP de traço catalogado presente na amostra._")
+        else:
+            add("| RSID | Gene | Traço | Genótipo | Interpretação |")
+            add("|------|------|-------|:--------:|---------------|")
+            for t in traits:
+                interp = t["interpretation"]
+                if t.get("note"):
+                    interp += f" ⚠️ _{t['note']}_"
+                add(f"| `{t['rsid']}` | {t['gene']} | {t['trait']} | `{t['genotype']}` | {interp} |")
+        add("")
+
+        add("---")
+        add("")
+        add("> **Aviso:** Relatório de rastreio sobre dados de genotipagem por chip "
+            "(cobertura parcial do genoma). Interpretações indicativas, não "
+            "diagnósticas. Confirme qualquer achado relevante clinicamente.")
+
+        return "\n".join(lines)
